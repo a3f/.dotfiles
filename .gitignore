@@ -5,7 +5,7 @@
 !.gitignore
 !.bash_profile
 !.vimrc.after
-!~/bin/$
+!/Users/a3f/bin/$
 !~/bin/header
 !~/bin/header++
 
