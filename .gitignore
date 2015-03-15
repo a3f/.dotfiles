@@ -1,9 +1,10 @@
 *
+!/Users/a3f/.vim/janus/vim/vimrc
 !.vimrc
 !.gitignore
 !.bash_profile
 !.vimrc.after
-!./usr/bin/$
-!./usr/bin/header
-!./usr/bin/header++
+!/usr/bin/$
+!/usr/bin/header
+!/usr/bin/header++
 
