@@ -3,4 +3,7 @@
 !.gitignore
 !.bash_profile
 !.vimrc.after
+!./usr/bin/$
+!./usr/bin/header
+!./usr/bin/header++
 
