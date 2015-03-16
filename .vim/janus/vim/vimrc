@@ -76,7 +76,7 @@ filetype plugin indent on    " required
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
-
+let g:ycm_extra_conf_vim_data = ['&filetype']
 let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 
 cmap :lux :set background=light<CR> 
@@ -89,6 +89,9 @@ set formatoptions+=r
 " buffer jump with tab/c-tab
 nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
 nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
+
+" jump to decl/def
+nnoremap <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 set guifont=Inconsolata\ for\ Powerline:h16
 let g:airline#extensions#tabline#enabled = 1
