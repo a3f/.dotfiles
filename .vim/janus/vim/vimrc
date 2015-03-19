@@ -82,14 +82,34 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 cmap :lux :set background=light<CR> 
 cmap :nox :set background=dark<CR> 
 map <Esc><Esc> :write<CR>
-map <leader><leader><leader> :%!astyle<CR> 
+map <leader><leader><leader> :%!astyle<CR>``
+set clipboard=unnamed
 cmap w!! w !sudo tee >/dev/null %
-set formatoptions+=r
-
+"
 " buffer jump with tab/c-tab
 nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
 nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
 
+vmap <tab> >gv
+"make tab in v mode indent code"
+vmap <s-tab> <gv
+
+"highlight last inserted text
+nnoremap gV `[v`]
+
+ "j/k enter wrapped lines
+nnoremap j gj
+nnoremap k gk
+set tabstop=4    "Number of spaces that a <Tab> in the file counts for"
+set shiftwidth=4
+set showmatch    "When a bracket is inserted, briefly jump to the matching one"
+
+
+autocmd BufRead,BufNewFile *.hsc set filetype=haskell
+
+" vmap <D-c> "+y<CR>
+" vmap <D-v> "+p
+" vmap <D-x> "+d<CR>
 " jump to decl/def
 nnoremap <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
@@ -98,7 +118,7 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts=1
 
 if !exists('g:airline_symbols')
-let g:airline_symbols = {}
+    let g:airline_symbols = {}
 endif
 
 set encoding=utf-8

@@ -54,12 +54,12 @@ def FlagsForFile( filename , **kwargs ):
   flags =   [
             '-Wall',
             '-Wextra',
-            '-pedantic'
+            '-pedantic',
             '-isystem', '/usr/local/include/lua5.1',
             '-isystem', '/System/Library/Frameworks/Python.framework/Headers',
             '-isystem', '/usr/local/include',
             '-isystem', '/usr/local/include/eigen3',
-            '-I', 'include'
+            '-I', 'include',
             '-I.'
             ]
   data = kwargs['client_data']
