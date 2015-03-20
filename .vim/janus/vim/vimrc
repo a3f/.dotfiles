@@ -60,7 +60,9 @@ Plugin 'sjl/gundo.vim'
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-easytags'
 Plugin 'rosenfeld/conque-term'
-
+Plugin 'dag/vim2hs'
+Plugin 'eagletmt/neco-ghc'
+Plugin 'eagletmt/ghcmod-vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
