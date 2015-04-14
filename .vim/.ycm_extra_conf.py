@@ -60,6 +60,7 @@ def FlagsForFile( filename , **kwargs ):
             '-isystem', '/usr/local/include',
             '-isystem', '/usr/local/include/eigen3',
             '-I', 'include',
+            '-I', '../include',
             '-I.'
             ]
   data = kwargs['client_data']
