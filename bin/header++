@@ -1,3 +1,4 @@
 #!/bin/bash
-echo "#include <$@>" | cc -std=c++11 -xc++-header -H - -o /dev/null 2>&1 | head -n1 | sed 's/^\. //'
+CXX=${2:-c++}
+echo "#include <$1>" | $CXX -std=c++11 -xc++-header -H - -o /dev/null 2>&1 | head -n1 | sed 's/^\. //'
 
