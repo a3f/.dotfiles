@@ -63,6 +63,7 @@ Plugin 'rosenfeld/conque-term'
 Plugin 'dag/vim2hs'
 Plugin 'eagletmt/neco-ghc'
 Plugin 'eagletmt/ghcmod-vim'
+Plugin 'scrooloose/syntastic'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -83,10 +84,7 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 
 cmap :lux :set background=light<CR> 
 cmap :nox :set background=dark<CR> 
-map <Esc><Esc> :write<CR>
-map <leader><leader><leader> :%!astyle<CR>``
 set clipboard=unnamed
-cmap w!! w !sudo tee >/dev/null %
 "
 " buffer jump with tab/c-tab
 nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
@@ -98,35 +96,57 @@ vmap <s-tab> <gv
 
 "highlight last inserted text
 nnoremap gV `[v`]
-
+:set wrap linebreak nolist
  "j/k enter wrapped lines
 nnoremap j gj
 nnoremap k gk
 set tabstop=4    "Number of spaces that a <Tab> in the file counts for"
 set shiftwidth=4
+set textwidth=0
+set wrapmargin=0
+set formatoptions-=t
 set showmatch    "When a bracket is inserted, briefly jump to the matching one"
-
+set relativenumber
 
 autocmd BufRead,BufNewFile *.hsc set filetype=haskell
-
+autocmd VimLeave *.* :mksession! ~/.vimsession<CR>
+"map ZZ :mksession! ~/.vimsession<CR>
+"source ~/.vimsession
 " vmap <D-c> "+y<CR>
 " vmap <D-v> "+p
 " vmap <D-x> "+d<CR>
 " jump to decl/def
-nnoremap <leader>g :YcmCompleter GoToDefinitionElseDeclaration<CR>
-
+let g:syntastic_masm_checkers = ["nasm"]
+:set foldmethod=syntax
+set foldlevel=99
+let mapleader=' '
+nnoremap <leader>d :YcmCompleter GoTo<CR>
+nnoremap <leader>D :YcmCompleter GoToDefinitionElseDeclaration<CR>
+let g:ycm_open_loclist_on_ycm_diags=1 
+nnoremap <leader>l :YcmForceCompileAndDiagnostics<CR><CR>
+nnoremap <leader>L :YcmForceCompileAndDiagnostics<CR><CR>:YcmDiags<CR>
+nnoremap <leader>T :YcmCompleter GetType<CR>
+nnoremap <leader>a :!%astyle<CR>``
+nnoremap <leader>n :noh<CR>
+" this needs to be <leader>l and per filetype
+nnoremap <leader>a :SyntasticCheck<CR>
 set guifont=Inconsolata\ for\ Powerline:h16
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts=1
-
+"set timeoutlen=50 "fixes pause when leaving insert mode
+set timeoutlen=1000 ttimeoutlen=0
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
 endif
-
+set hidden
 set encoding=utf-8
-
 " unicode symbols
-let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.whitespace = 'Ξ'
-
-
+let g:airline_symbols.whitespace = '·'
+let g:airline_symbols.linenr = 'Ξ'
+"let g:airline#extensions#loclist#enabled = 1
+function! AirlineInit()
+  call airline#parts#define_raw('time', '%{strftime("%R")}')
+  let g:airline_section_warning = airline#section#create([' ⎋ ', 'time'])
+  call airline#parts#define_accent('time', 'white')
+endfunction
+autocmd VimEnter * call AirlineInit()
