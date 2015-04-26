@@ -14,7 +14,7 @@ alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 
 alias ll='ls -lhA'
-alias ln='sudo arp-scan --localnet --interface '
+alias lsn='sudo arp-scan --localnet --interface '
 
 
 PATH=~/bin:$PATH
