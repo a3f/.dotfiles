@@ -19,6 +19,7 @@ alias lsn='sudo arp-scan --localnet --interface '
 
 PATH=~/bin:$PATH
 PATH=~/doc:$PATH
+PATH=~/arm-cs-tools/bin:$PATH
 export EDITOR=vim
 set -o vi
 set editing-mode vi
