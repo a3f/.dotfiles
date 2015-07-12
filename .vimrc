@@ -1,5 +1,9 @@
 syntax enable
+if $TERM_PROGRAM=="Apple_Terminal"
+set background=light
+else
 set background=dark
+endif
 colorscheme solarized
 set nocompatible              " be iMproved, required
 filetype off                  " required
@@ -29,7 +33,7 @@ Plugin 'dag/vim2hs'
 Plugin 'eagletmt/neco-ghc'
 Plugin 'eagletmt/ghcmod-vim'
 Plugin 'scrooloose/syntastic'
-Plugin 'altercation/vim-colors-solarized'
+"Plugin 'altercation/vim-colors-solarized'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -45,17 +49,14 @@ filetype plugin indent on    " required
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
-let g:ycm_extra_conf_vim_data = ['&filetype']
-let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
-
 """""""""""""""""
 """" General """"
 """""""""""""""""
 
 let mapleader=' '
 " evaluate selection or till semi-colon
-vnoremap <leader>e "tc<c-r>=<c-r>t<CR><Esc>T<space>
-nnoremap <leader>e "tct;<c-r>=<c-r>t<CR><Esc>T<space>
+vnoremap <leader>e "ac<c-r>=<c-r>a<CR><Esc>T<space>
+nnoremap <leader>e "ac/[;,:=]<cr><c-r>=<c-r>a<CR><Esc>T<space>:noh<cr>
 nnoremap <leader><backspace> :w<CR>
 
 nore ; :
@@ -120,6 +121,12 @@ set incsearch
 nnoremap <silent> <leader>n :noh<CR>
 " highlist last insertion
 nnoremap gV `[v`]
+nore ^ 0
+nore 0 ^
+nnoremap <leader>h o#include ""<Esc>i
+nnoremap <leader>sh o#include <><Esc>i
+nnoremap <leader>H O#include ""<Esc>i
+nnoremap <leader>sH O#include <><Esc>i
 "nnoremap <down> <C-d>
 "nnoremap <up> <C-u>
 nnoremap <leader>u :GundoToggle<CR>
@@ -131,23 +138,30 @@ set wrap linebreak nolist
 "j/k enter wrapped lines
 nnoremap j gj
 nnoremap k gk
+
+vnoremap j gj
+vnoremap k gk
 " ctrl+j breaks line
-"nnoremap <NL> i<CR><ESC>
-nnoremap <leader>j o<Esc>
-nnoremap <leader>k O<Esc>
+nnoremap <c-j> a<CR><Esc>k$ 
 
 """""""""""""""""
 """" Editing """"
 """""""""""""""""
+"
 "replace selection or current word with yanked text
 vnoremap S "_dP
 nnoremap S "_diwP
-inoremap jk <Esc>
+"nnoremap <C-space> A<c-x><c-l><Esc>
+"nnoremap <C-@> A<c-x><c-l><Esc>
+nnoremap <space> i<space><Esc>
+
 """""""""""""""""""
 """" Clipboard """"
 """""""""""""""""""
 set clipboard=unnamed
 
+nnoremap x "_x
+vnoremap x "_x
 " accumulate yanks instead of overwriting
 nnoremap <leader>y "Ayy
 nnoremap <leader>d "Add
@@ -164,18 +178,28 @@ let g:syntastic_nasm_nasm_args = ["-f macho64"]
 let g:syntastic_asm_nasm_args = ["-f macho64"]
 let g:syntastic_masm_nasm_args = ["-f macho64"]
 let g:syntastic_asm_nasm_args = ["-f macho64"]
+
 let g:ycm_open_loclist_on_ycm_diags=1 
+let g:ycm_extra_conf_vim_data = ['&filetype']
+let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
+let g:ycm_register_as_syntastic_checker = 0 
+let g:ycm_show_diagnostics_ui = 1
+let g:ycm_always_populate_location_list = 1
 set foldmethod=syntax
 set foldlevel=99
 " jump to decl/def
 nnoremap <leader>g :YcmCompleter GoTo<CR>
 nnoremap <leader>G :YcmCompleter GoToDefinitionElseDeclaration<CR>
 nnoremap <leader>l :YcmForceCompileAndDiagnostics<CR><CR>
+nnoremap <F8> :YcmForceCompileAndDiagnostics<CR><CR>
 nnoremap <leader>L :YcmForceCompileAndDiagnostics<CR><CR>:YcmDiags<CR>
 nnoremap <leader>T :YcmCompleter GetType<CR>
+nnoremap <leader>/ :YcmShowDetailedDiagnostic<CR>
 nnoremap <leader>fmt :%!astyle<CR>``
 " this needs to be <leader>l and per filetype
 nnoremap <leader>a :SyntasticCheck<CR>
+nnoremap <F7> :lprevious<CR>
+nnoremap <F9> :lnext<CR>
 
 """""""""""""""""""""""
 """" File specific """"

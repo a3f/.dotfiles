@@ -1,2 +1,8 @@
 *
+!bin/
+*.swp
 
+
+bin/.DS_Store
+
+bin/try.out

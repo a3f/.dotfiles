@@ -1,0 +1,19 @@
+#!/usr/bin/perl
+ 
+use Cwd;
+
+my $cwd = getcwd();
+my $cmd = shift;
+my $exec = 0;
+if (grep {$_ eq $cmd}  qw(cc gcc c++ g++ clang++ clang icc i++ c99))
+{
+	s/(^[^-].*$)/$cwd\/\1/ for @ARGV;
+	push @ARGV, ("-o", "/Users/a3f/bin/try.out"); 
+	$nexec = $ENV{'NEXEC'};
+}
+#TODO: use $(TMP) or something
+chdir "/Users/a3f/tmp" or die "$!";
+#print "$cmd @ARGV\n";
+system ($cmd, @ARGV) == 0 or die "$!";
+exec "~/bin/try.out" if (!$nexec);
+
