@@ -130,6 +130,9 @@ nnoremap <leader>sH O#include <><Esc>i
 "nnoremap <down> <C-d>
 "nnoremap <up> <C-u>
 nnoremap <leader>u :GundoToggle<CR>
+"support for Inline::C code highlighting
+"eventually __END__ highlighting must be removed
+autocmd BufRead,BufNewFile *.pl call TextEnableCodeSnip('c', '__C__', '__DATA__', 'SpecialComment')
 
 """""""""""""""""""""
 """" Line breaks """"
@@ -173,6 +176,9 @@ nnoremap <leader>P "aP
 """""""""""""""""""""""
 """" Code specific """"
 """""""""""""""""""""""
+let g:syntastic_check_on_open = 1
+let g:syntastic_enable_perl_checker = 1
+let g:syntastic_perl_checkers = ["perl"]
 let g:syntastic_masm_checkers = ["nasm"]
 let g:syntastic_nasm_nasm_args = ["-f macho64"]
 let g:syntastic_asm_nasm_args = ["-f macho64"]
@@ -216,5 +222,30 @@ function! AirlineAddTime()
   call airline#parts#define_raw('time', '%{strftime("%R")}')
   let g:airline_section_warning = airline#section#create([' ⎋ ', 'time'])
   call airline#parts#define_accent('time', 'white')
+endfunction
+
+function! TextEnableCodeSnip(filetype,start,end,textSnipHl)
+  let ft=toupper(a:filetype)
+  let group='textGroup'.ft
+  if exists('b:current_syntax')
+    let s:current_syntax=b:current_syntax
+    " Remove current syntax definition, as some syntax files (e.g. cpp.vim)
+    " do nothing if b:current_syntax is defined.
+    unlet b:current_syntax
+  endif
+  execute 'syntax include @'.group.' syntax/'.a:filetype.'.vim'
+  try
+    execute 'syntax include @'.group.' after/syntax/'.a:filetype.'.vim'
+  catch
+  endtry
+  if exists('s:current_syntax')
+    let b:current_syntax=s:current_syntax
+  else
+    unlet b:current_syntax
+  endif
+  execute 'syntax region textSnip'.ft.'
+  \ matchgroup='.a:textSnipHl.'
+  \ start="'.a:start.'" end="'.a:end.'"
+  \ contains=@'.group
 endfunction
 

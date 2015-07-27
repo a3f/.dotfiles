@@ -9,7 +9,7 @@ alias fgrep='fgrep --color=auto'
 alias ll='ls -lhA'
 alias ls='ls -GF'
 alias lsn='sudo arp-scan --localnet --interface '
-
+alias man='MANWIDTH=$(($COLUMNS-12)) man'
 
 PATH=~/bin:$PATH
 PATH=~/doc:$PATH
