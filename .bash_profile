@@ -8,28 +8,22 @@ alias fgrep='fgrep --color=auto'
 
 alias ll='ls -lhA'
 alias ls='ls -GF'
-alias lsn='sudo arp-scan --localnet --interface '
+alias lsdir="find . -maxdepth 1 -type d -print | xargs du -sk | sort -rn"
+alias lsnet='sudo arp-scan --localnet --interface '
+alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn'
 alias man='MANWIDTH=$(($COLUMNS-12)) man'
+alias back='cd $OLDPWD'
+alias valgrind='valgrind --dsymutil=yes'
+alias manman='cat ~/txt/sections.txt'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias gcc='gcc-5'
+alias vi='nvim -u ~/.vimrc.minimal'
 
-PATH=~/bin:$PATH
-PATH=~/doc:$PATH
-PATH=~/doc:$PATH
+PATH=~/bin:~/doc:$PATH
 PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH
 
 export EDITOR=vim
-
-##
-# Your previous /Users/a3f/.bash_profile file was backed up as /Users/a3f/.bash_profile.macports-saved_2015-05-22_at_16:22:38
-##
-
-# MacPorts Installer addition on 2015-05-22_at_16:22:38: adding an appropriate PATH variable for use with MacPorts.
-export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
-# Finished adapting your PATH environment variable for use with MacPorts.
-
-
-##
-# Your previous /Users/a3f/.bash_profile file was backed up as /Users/a3f/.bash_profile.macports-saved_2015-05-22_at_16:29:47
-##
 
 # MacPorts Installer addition on 2015-05-22_at_16:29:47: adding an appropriate PATH variable for use with MacPorts.
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH"

@@ -1,0 +1,22 @@
+syntax enable
+set nocompatible
+nore ; :
+nore : ;
+set encoding=utf-8
+set fileencoding=utf-8
+set relativenumber
+set number
+set hidden
+set ignorecase smartcase
+" remove search highlight
+set hlsearch
+set incsearch
+nore ^ 0
+nore 0 ^
+nnoremap x "_x
+vnoremap x "_x
+set laststatus=2
+cnore <c-b> <c-a>
+cnore <c-a> <c-b>
+set statusline=\ %f%m%r%h%w\ %=%({%{&ff}\|%{(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\")}%k\|%Y}%)\ %([%l,%v][%p%%]\ %)
+

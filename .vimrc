@@ -2,7 +2,7 @@ syntax enable
 if $TERM_PROGRAM=="Apple_Terminal"
 set background=light
 else
-set background=dark
+set background=light
 endif
 colorscheme solarized
 set nocompatible              " be iMproved, required
@@ -17,6 +17,9 @@ call vundle#begin()
 " let Vundle manage Vundle, required
 Plugin 'gmarik/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-eunuch'
+Plugin 'scrooloose/nerdcommenter'
 Plugin 'git://git.wincent.com/command-t.git'
 "Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'Valloric/YouCompleteMe'
@@ -73,6 +76,7 @@ set number
 set showcmd
 set wildmenu
 set wildmode=list:longest,full
+" doesn't work in osx term
 set mouse=a
 set relativenumber
 set guifont=Inconsolata\ for\ Powerline:h16
@@ -110,6 +114,8 @@ set shiftwidth=4
 set textwidth=0
 set wrapmargin=0
 set formatoptions-=t
+vmap <C-c> <plug>NERDCommenterInvert
+nmap <C-c> <plug>NERDCommenterInvert
 
 """"""""""""""""""""
 """" Navigation """"
@@ -121,8 +127,16 @@ set incsearch
 nnoremap <silent> <leader>n :noh<CR>
 " highlist last insertion
 nnoremap gV `[v`]
+hi MatchParen cterm=standout
 nore ^ 0
 nore 0 ^
+" <c-a> start of line, <c-e> end of line
+cnore <c-b> <c-a>
+cnore <c-a> <c-b>
+if has ('nvim')
+tnoremap <Esc> <C-\><C-n>
+endif
+
 nnoremap <leader>h o#include ""<Esc>i
 nnoremap <leader>sh o#include <><Esc>i
 nnoremap <leader>H O#include ""<Esc>i
