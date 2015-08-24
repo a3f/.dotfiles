@@ -2,15 +2,24 @@
 PS1="\[\e[38;5;3m\][\u@\h \w]\\$\[$(tput sgr0)\]\[\e[0m\] \`if [ \$? = 0 ]; then echo -e '\[\e[01;32m\]\n\xE2\x98\xBA'; else echo -e '\[\e[01;31m\]\n\xE2\x98\xB9'; fi\` \[\e[01;34m\]\[\e[00m"
 #PS1='[\033[01m][ [\033[01;34m]\u@\h [\033[00m][\033[01m]] [\033[01;32m]\w[\033[00m]\n[\033[01;34m]$[\033[00m]>'
 color()(set -o pipefail;"$@" 2>&1>&3|sed $'s,.*,\e[31m&\e[m,'>&2)3>&1
+
+HIGHLIGHT=`echo -e '\033[41m\033[37m'`
+NORMAL=`echo -e '\033[0m'`
+
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
+cal () {
+	$(which cal) $@ | sed -e "s/\(`date +%d`\)/$HIGHLIGHT\1$NORMAL/"
+}
 
 alias ll='ls -lhA'
 alias ls='ls -GF'
+alias make='make -j4'
+alias a='./a.out'
 alias lsdir="find . -maxdepth 1 -type d -print | xargs du -sk | sort -rn"
 alias lsnet='sudo arp-scan --localnet --interface '
-alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn'
+alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn | tail -n +2 | sed -e "s/^Nmap scan report for \(.*\)\$/$HIGHLIGHT\1$NORMAL/"'
 alias man='MANWIDTH=$(($COLUMNS-12)) man'
 alias back='cd $OLDPWD'
 alias valgrind='valgrind --dsymutil=yes'
@@ -19,6 +28,7 @@ alias ..='cd ..'
 alias ...='cd ../..'
 alias gcc='gcc-5'
 alias vi='nvim -u ~/.vimrc.minimal'
+alias unq='xattr -d com.apple.quarantine'
 
 PATH=~/bin:~/doc:$PATH
 PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH

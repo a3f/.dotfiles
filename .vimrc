@@ -125,11 +125,15 @@ set ignorecase smartcase
 set hlsearch
 set incsearch
 nnoremap <silent> <leader>n :noh<CR>
+" left-hand line-wise navigation
+nnoremap <silent> <c-w> <c-y>
 " highlist last insertion
 nnoremap gV `[v`]
 hi MatchParen cterm=standout
 nore ^ 0
 nore 0 ^
+" remember column when switching buffers
+:se nostartofline
 " <c-a> start of line, <c-e> end of line
 cnore <c-b> <c-a>
 cnore <c-a> <c-b>
@@ -137,16 +141,13 @@ if has ('nvim')
 tnoremap <Esc> <C-\><C-n>
 endif
 
-nnoremap <leader>h o#include ""<Esc>i
-nnoremap <leader>sh o#include <><Esc>i
-nnoremap <leader>H O#include ""<Esc>i
-nnoremap <leader>sH O#include <><Esc>i
 "nnoremap <down> <C-d>
 "nnoremap <up> <C-u>
 nnoremap <leader>u :GundoToggle<CR>
 "support for Inline::C code highlighting
 "eventually __END__ highlighting must be removed
 autocmd BufRead,BufNewFile *.pl call TextEnableCodeSnip('c', '__C__', '__DATA__', 'SpecialComment')
+cabbr <expr> %% expand('%:p:h')
 
 """""""""""""""""""""
 """" Line breaks """"
@@ -190,6 +191,8 @@ nnoremap <leader>P "aP
 """""""""""""""""""""""
 """" Code specific """"
 """""""""""""""""""""""
+let g:python_host_skip_check = 1
+let g:python3_host_skip_check = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_enable_perl_checker = 1
 let g:syntastic_perl_checkers = ["perl"]
