@@ -71,6 +71,7 @@ set fileencoding=utf-8
 """" UI """"
 """"""""""""
 
+set lazyredraw
 set nrformats+=alpha
 set number
 set showcmd

@@ -1,0 +1,20 @@
+[filter "hawser"]
+	clean = git hawser clean %f
+	smudge = git hawser smudge %f
+	required = true
+[user]
+	name = Ahmad Fatoum
+	email = ahmad@a3f.at
+[filter "lfs"]
+	clean = git lfs clean %f
+	smudge = git lfs smudge %f
+	required = true
+[diff]
+	tool = vimdiff
+[alias]
+	d = difftool
+[difftool]
+	prompt = false
+[grep]
+	patternType = perl
+	lineNumber = true
