@@ -15,11 +15,14 @@ call vundle#begin()
 "call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
+Plugin 'othree/eregex.vim'
 Plugin 'gmarik/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-eunuch'
 Plugin 'scrooloose/nerdcommenter'
+Plugin 'scrooloose/nerdtree'
 Plugin 'git://git.wincent.com/command-t.git'
 "Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'Valloric/YouCompleteMe'
@@ -102,6 +105,8 @@ set hidden
 nnoremap  <silent>   <tab>  :bnext<CR>
 nnoremap  <silent> <s-tab>  :bprevious<CR>
 nnoremap Z<tab> :bd<CR>
+" jump to last buffer
+nnoremap <silent> <leader><tab> :b#<cr>
 
 """""""""""""""""""""""""
 """" Code formatting """"
@@ -115,7 +120,7 @@ set shiftwidth=4
 set textwidth=0
 set wrapmargin=0
 set formatoptions-=t
-vmap <C-c> <plug>NERDCommenterInvert
+vmap <C-c> <plug>NERDCommenterNested
 nmap <C-c> <plug>NERDCommenterInvert
 
 """"""""""""""""""""
@@ -127,7 +132,7 @@ set hlsearch
 set incsearch
 nnoremap <silent> <leader>n :noh<CR>
 " left-hand line-wise navigation
-nnoremap <silent> <c-w> <c-y>
+nnoremap <silent> <c-q> <c-y>
 " highlist last insertion
 nnoremap gV `[v`]
 hi MatchParen cterm=standout
@@ -167,7 +172,7 @@ nnoremap <c-j> a<CR><Esc>k$
 """" Editing """"
 """""""""""""""""
 "
-"replace selection or current word with yanked text
+"replace FALSE or current word with yanked text
 vnoremap S "_dP
 nnoremap S "_diwP
 "nnoremap <C-space> A<c-x><c-l><Esc>
@@ -202,7 +207,7 @@ let g:syntastic_nasm_nasm_args = ["-f macho64"]
 let g:syntastic_asm_nasm_args = ["-f macho64"]
 let g:syntastic_masm_nasm_args = ["-f macho64"]
 let g:syntastic_asm_nasm_args = ["-f macho64"]
-
+let g:ycm_autoclose_preview_window_after_insertion=1
 let g:ycm_open_loclist_on_ycm_diags=1 
 let g:ycm_extra_conf_vim_data = ['&filetype']
 let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"

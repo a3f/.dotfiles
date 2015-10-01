@@ -1,0 +1,4 @@
+#!/bin/sh
+
+qemu-system-x86_64 $@ -redir tcp:2222::22 ~/Downloads/FreeBSD-10.2-RELEASE-amd64.qcow2 &
+ssh root@127.0.0.1 -p 2222

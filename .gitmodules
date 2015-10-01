@@ -1,0 +1,3 @@
+[submodule "prjs/hydra/client/ia32hook"]
+	path = prjs/hydra/client/ia32hook
+	url = http://github.com/a3f/ia32hook

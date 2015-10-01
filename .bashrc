@@ -10,14 +10,19 @@ alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 cal () {
-	$(which cal) $@ | sed -e "s/\(`date +%d`\)/$HIGHLIGHT\1$NORMAL/"
+	$(which cal) $@ | sed -e "s/\(`date +%e`\)/$HIGHLIGHT\1$NORMAL/"
+}
+cd! () {
+	mkdir -v -p $@;
+	cd $@;
 }
 
 alias ll='ls -lhA'
 alias ls='ls -GF'
 alias make='make -j4'
+alias make!='make clean; make -j4'
 alias a='./a.out'
-alias lsdir="find . -maxdepth 1 -type d -print | xargs du -sk | sort -rn"
+alias dudir="find . -maxdepth 1 -type d -print | xargs du -sk | sort -rn"
 alias lsnet='sudo arp-scan --localnet --interface '
 alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn | tail -n +2 | sed -n "s/^Nmap scan report for \(.*\)\$/\1/p"'
 alias man='MANWIDTH=$(($COLUMNS-12)) man'
@@ -29,15 +34,22 @@ alias ...='cd ../..'
 alias gcc='gcc-5'
 alias vi='nvim -u ~/.vimrc.minimal'
 alias unq='xattr -d com.apple.quarantine'
+alias gdb='gdb -q'
+alias bc='bc -lq'
+W='-Wall -Wextra -pedantic'
 
 PATH=~/bin:~/doc:$PATH
 PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH
 
 export EDITOR=vim
+set -o vi
 
 # MacPorts Installer addition on 2015-05-22_at_16:29:47: adding an appropriate PATH variable for use with MacPorts.
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
 # Finished adapting your PATH environment variable for use with MacPorts.
 source /opt/local/etc/bash_completion.d/*.bash
 source /opt/local/etc/bash_completion.d/*.sh
+
+# enables usage of ^Q in vim
+stty -ixon > /dev/null 2>/dev/null
 
