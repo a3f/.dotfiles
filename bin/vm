@@ -1,0 +1,14 @@
+#!/usr/bin/perl
+# vim: set ft=perl
+
+my %cmds = (
+	'ubuntu start' => 'vboxmanage startvm UbuntuServer --type headless',
+	'ubuntu stop'  => 'vboxmanage controlvm UbuntuServer poweroff',
+	'ubuntu pause' => 'vboxmanage controlvm UbuntuServer savestate',
+	'ubuntu ssh'   => 'ssh -p 2222 a3f:.@localhost'
+);
+
+exec $cmds{"@ARGV"} if $cmds{"@ARGV"};
+print "Unknown command: '@ARGV'", "\n";
+
+

@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+use IPC::Open2; 
+$SIG{'__WARN__'} = sub{ die "$0: $!\n" };
+
+my $offset = shift(@ARGV) // "0";
+$offset = oct($offset) if $offset =~ /^0/;
+my $base = $offset >= 2**32 ? 16 : 8;
+
+my $zeroes = $offset % 16;
+my $padding = 1 + int($zeroes / 2) + 2*$zeroes;
+my $bytestr = "\0" x $zeroes;
+{ local $/; $bytestr .= <> }
+
+open2(\*XXD_OUT, \*XXD_IN, "xxd") or die "xxd is not available!";
+print XXD_IN $bytestr; close XXD_IN;
+
+if ($zeroes) {
+	$_ = <XXD_OUT>;
+	s/^(.{50}).{$zeroes}/$1 . (' ' x $zeroes)/ge;
+	s/^([[:xdigit:]]+:).{$padding}/$1 . (' ' x $padding)/ge;
+	my $newoff = sprintf("%0${base}x",hex($1)+$offset) =~ s/^(.{8})(.{8})$/$1_$2/r;
+	s/^([[:xdigit:]]+):/$newoff:/g;
+	print
+}
+while (<XXD_OUT>) {
+	s/^([[:xdigit:]]+)(?=:)/sprintf("%0${base}x", hex($1)+$offset-$offset%16) =~ s[^(.{8})(.{8})$][$1_$2]r/ge;
+	print
+}
+

@@ -120,6 +120,7 @@ set shiftwidth=4
 set textwidth=0
 set wrapmargin=0
 set formatoptions-=t
+set autoindent
 vmap <C-c> <plug>NERDCommenterNested
 nmap <C-c> <plug>NERDCommenterInvert
 

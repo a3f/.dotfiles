@@ -1,7 +1,14 @@
 #[ -z "$PS1" ] && return;
 PS1="\[\e[38;5;3m\][\u@\h \w]\\$\[$(tput sgr0)\]\[\e[0m\] \`if [ \$? = 0 ]; then echo -e '\[\e[01;32m\]\n\xE2\x98\xBA'; else echo -e '\[\e[01;31m\]\n\xE2\x98\xB9'; fi\` \[\e[01;34m\]\[\e[00m"
 #PS1='[\033[01m][ [\033[01;34m]\u@\h [\033[00m][\033[01m]] [\033[01;32m]\w[\033[00m]\n[\033[01;34m]$[\033[00m]>'
-color()(set -o pipefail;"$@" 2>&1>&3|sed $'s,.*,\e[31m&\e[m,'>&2)3>&1
+color() {
+	if [ $# = 0 ]; then
+		sed $'s,.*,\e[31m&\e[m,' ;
+	else
+		(set -o pipefail;"$@" 2>&1>&3|sed $'s,.*,\e[31m&\e[m,'>&2)3>&1;
+	fi
+		
+}
 
 HIGHLIGHT=`echo -e '\033[41m\033[37m'`
 NORMAL=`echo -e '\033[0m'`
@@ -17,11 +24,12 @@ cd! () {
 	cd $@;
 }
 
-alias ll='ls -lhA'
+alias ll='ls -hkAl'
 alias ls='ls -GF'
 alias make='make -j4'
 alias make!='make clean; make -j4'
 alias a='./a.out'
+alias size='size --format=SysV'
 alias dudir="find . -maxdepth 1 -type d -print | xargs du -sk | sort -rn"
 alias lsnet='sudo arp-scan --localnet --interface '
 alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn | tail -n +2 | sed -n "s/^Nmap scan report for \(.*\)\$/\1/p"'
@@ -31,15 +39,16 @@ alias valgrind='valgrind --dsymutil=yes'
 alias manman='cat ~/txt/sections.txt'
 alias ..='cd ..'
 alias ...='cd ../..'
-alias gcc='gcc-5'
 alias vi='nvim -u ~/.vimrc.minimal'
 alias unq='xattr -d com.apple.quarantine'
 alias gdb='gdb -q'
 alias bc='bc -lq'
 W='-Wall -Wextra -pedantic'
+lallegro=`pkg-config --cflags --libs allegro-5 allegro_acodec-5 allegro_audio-5 allegro_font-5 allegro_image-5 allegro_main-5 allegro_dialog-5 allegro_primitives-5 allegro_ttf-5`
 
 PATH=~/bin:~/doc:$PATH
 PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH
+PATH=/Users/a3f/arm-cs-tools/bin:$PATH
 
 export EDITOR=vim
 set -o vi
@@ -53,3 +62,20 @@ source /opt/local/etc/bash_completion.d/*.sh
 # enables usage of ^Q in vim
 stty -ixon > /dev/null 2>/dev/null
 
+cd()
+{
+	builtin cd "$@" && eval "`ondir \"$OLDPWD\" \"$PWD\"`"
+}
+
+pushd()
+{
+	builtin pushd "$@" && eval "`ondir \"$OLDPWD\" \"$PWD\"`"
+}
+
+popd()
+{
+	builtin popd "$@" && eval "`ondir \"$OLDPWD\" \"$PWD\"`"
+}              
+
+# Run ondir on login
+eval "`ondir /`"

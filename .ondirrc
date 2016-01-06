@@ -1,0 +1,27 @@
+enter /Users/a3f/prjs/os
+	echo LET IT HAPPEN!
+	alias nm='arm-none-eabi-nm'
+	alias objcopy='arm-none-eabi-objcopy'
+	alias readelf='arm-none-eabi-readelf'
+	alias objdump='arm-none-eabi-objdump'
+	alias size='arm-none-eabi-size --format=SysV'
+	alias debug=./debug
+	alias s='stty sane'
+
+leave /Users/a3f/prjs/os
+	echo 'coward :('
+	unalias nm
+	unalias readelf
+	unalias objcopy
+	unalias objdump
+	unalias size
+	unalias debug
+	unalias s
+
+
+enter /Users/a3f/prjs/aish
+	alias a=./aish
+
+leave /Users/a3f/prjs/aish
+	unalias a
+	alias a=./a.out
