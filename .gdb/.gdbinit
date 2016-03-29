@@ -94,7 +94,7 @@ set $ARMOPCODES = 1
 # x86 disassembly flavor: 0 for Intel, 1 for AT&T
 set $X86FLAVOR = 0
 # use colorized output or not
-set $USECOLOR = 1
+set $USECOLOR = 0
 # to use with remote KDP
 set $KDP64BITS = -1
 set $64BITS = 0

@@ -2,9 +2,10 @@ syntax enable
 if $TERM_PROGRAM=="Apple_Terminal"
 set background=light
 else
-set background=light
+set background=dark
 endif
-colorscheme solarized
+let g:solarized_termcolors=256  
+colorscheme Spacegray
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -33,13 +34,13 @@ Plugin 'kien/ctrlp.vim'
 Plugin 'a.vim'
 Plugin 'sjl/gundo.vim'
 Plugin 'xolox/vim-misc'
-Plugin 'xolox/vim-easytags'
+"Plugin 'xolox/vim-easytags'
 "Plugin 'rosenfeld/conque-term'
 Plugin 'dag/vim2hs'
 Plugin 'eagletmt/neco-ghc'
 Plugin 'eagletmt/ghcmod-vim'
 Plugin 'scrooloose/syntastic'
-"Plugin 'altercation/vim-colors-solarized'
+Plugin 'ajh17/Spacegray.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -116,6 +117,7 @@ vmap <tab> >gv
 vmap <s-tab> <gv
 
 set tabstop=4    "Number of spaces that a <Tab> in the file counts for"
+set expandtab
 set shiftwidth=4
 set textwidth=0
 set wrapmargin=0
@@ -134,6 +136,8 @@ set incsearch
 nnoremap <silent> <leader>n :noh<CR>
 " left-hand line-wise navigation
 nnoremap <silent> <c-q> <c-y>
+nnoremap <up> <C-y>
+nnoremap <down> <C-e>
 " highlist last insertion
 nnoremap gV `[v`]
 hi MatchParen cterm=standout
@@ -215,8 +219,9 @@ let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 let g:ycm_register_as_syntastic_checker = 0 
 let g:ycm_show_diagnostics_ui = 1
 let g:ycm_always_populate_location_list = 1
-set foldmethod=syntax
-set foldlevel=99
+set include-=i
+"set foldmethod=syntax
+"set foldlevel=99
 " jump to decl/def
 nnoremap <leader>g :YcmCompleter GoTo<CR>
 nnoremap <leader>G :YcmCompleter GoToDefinitionElseDeclaration<CR>

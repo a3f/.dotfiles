@@ -23,7 +23,11 @@ cd! () {
 	mkdir -v -p $@;
 	cd $@;
 }
-
+if [[ $OSTYPE == darwin* ]]; then
+alias tac='tail -r'
+alias unq='xattr -d com.apple.quarantine'
+alias ldd='otool -L'
+fi
 alias ll='ls -hkAl'
 alias ls='ls -GF'
 alias make='make -j4'
@@ -40,9 +44,21 @@ alias manman='cat ~/txt/sections.txt'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias vi='nvim -u ~/.vimrc.minimal'
-alias unq='xattr -d com.apple.quarantine'
+alias ed='ed -p:'
 alias gdb='gdb -q'
 alias bc='bc -lq'
+
+# by brian d foy
+alias d2h="perl -e 'printf qq|%X\n|, int( shift )'"
+alias d2o="perl -e 'printf qq|%o\n|, int( shift )'"
+alias d2b="perl -e 'printf qq|%b\n|, int( shift )'"
+alias h2d="perl -e 'printf qq|%d\n|, hex( shift )'"
+alias h2o="perl -e 'printf qq|%o\n|, hex( shift )'"
+alias h2b="perl -e 'printf qq|%b\n|, hex( shift )'"
+alias o2h="perl -e 'printf qq|%X\n|, oct( shift )'"
+alias o2d="perl -e 'printf qq|%d\n|, oct( shift )'"
+alias o2b="perl -e 'printf qq|%b\n|, oct( shift )'"
+
 W='-Wall -Wextra -pedantic'
 lallegro=`pkg-config --cflags --libs allegro-5 allegro_acodec-5 allegro_audio-5 allegro_font-5 allegro_image-5 allegro_main-5 allegro_dialog-5 allegro_primitives-5 allegro_ttf-5`
 
@@ -51,7 +67,7 @@ PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH
 PATH=/Users/a3f/arm-cs-tools/bin:$PATH
 
 export EDITOR=vim
-set -o vi
+#set -o vi
 
 # MacPorts Installer addition on 2015-05-22_at_16:29:47: adding an appropriate PATH variable for use with MacPorts.
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH"

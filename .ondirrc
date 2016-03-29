@@ -1,5 +1,4 @@
 enter /Users/a3f/prjs/os
-	echo LET IT HAPPEN!
 	alias nm='arm-none-eabi-nm'
 	alias objcopy='arm-none-eabi-objcopy'
 	alias readelf='arm-none-eabi-readelf'
@@ -9,7 +8,6 @@ enter /Users/a3f/prjs/os
 	alias s='stty sane'
 
 leave /Users/a3f/prjs/os
-	echo 'coward :('
 	unalias nm
 	unalias readelf
 	unalias objcopy
