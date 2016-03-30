@@ -1,7 +1,28 @@
 #!/bin/sh
+# vim: noexpandtab
+if [ $EUID -ne 0 ]; then
+	echo "This script must be run as root. Try running with sudo." 1>&2
+	exit 1
+fi
 INTERFACE=Wi-Fi
-sudo networksetup -setsocksfirewallproxy $INTERFACE 127.0.0.1 9050 off
-sudo networksetup -setsocksfirewallproxystate $INTERFACE on
-tor
-sudo networksetup -setsocksfirewallproxystate $INTERFACE off
+USER=`who am i | awk '{print $1}'`
+FLAGS=
 
+networksetup -setsocksfirewallproxy $INTERFACE 127.0.0.1 9050 off
+networksetup -setsocksfirewallproxystate $INTERFACE on
+function finish {
+networksetup -setsocksfirewallproxystate $INTERFACE off
+}
+trap finish EXIT
+if [ $# -ne 0 ]; then 
+	tmpfile='/tmp/TorExitNode'
+	exits=`echo $@ | sed -e's/\([[:alpha:]]\{1,\}\)/{\1}/g' -e's/[[:space:]]\{1,\}/,/g'`
+	echo $exits
+	cat <<- EOF > $tmpfile
+	ExitNodes $exits
+	StrictNodes 1
+	EOF
+	FLAGS+=" -f $tmpfile"
+fi
+
+sudo -u$USER tor $FLAGS
