@@ -1,6 +1,10 @@
 *
 !bin/
 *.swp
+GTAGS
+GRTAGS
+GPATH
+
 
 
 bin/.DS_Store

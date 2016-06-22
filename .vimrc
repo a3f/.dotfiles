@@ -22,8 +22,11 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-eunuch'
+Plugin 'FooSoft/vim-argwrap'
+Bundle 'christoomey/vim-sort-motion'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'scrooloose/nerdtree'
+Plugin 'welle/targets.vim'
 Plugin 'git://git.wincent.com/command-t.git'
 "Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'Valloric/YouCompleteMe'
@@ -116,6 +119,10 @@ nnoremap <silent> <leader><tab> :b#<cr>
 vmap <tab> >gv
 vmap <s-tab> <gv
 
+" hidden characters
+set listchars=trail:$
+set list
+
 set tabstop=4    "Number of spaces that a <Tab> in the file counts for"
 set expandtab
 set shiftwidth=4
@@ -125,6 +132,7 @@ set formatoptions-=t
 set autoindent
 vmap <C-c> <plug>NERDCommenterNested
 nmap <C-c> <plug>NERDCommenterInvert
+nnoremap <silent> = :ArgWrap<CR>
 
 """"""""""""""""""""
 """" Navigation """"
@@ -190,7 +198,9 @@ nnoremap <space> i<space><Esc>
 set clipboard=unnamed
 
 nnoremap x "_x
-vnoremap x "_x
+nnoremap x "_x
+vnoremap X "_X
+vnoremap X "_X
 " accumulate yanks instead of overwriting
 nnoremap <leader>y "Ayy
 nnoremap <leader>d "Add

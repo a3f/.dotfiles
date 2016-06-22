@@ -20,3 +20,5 @@
 	lineNumber = true
 [push]
 	default = simple
+[core]
+	editor = nvim
