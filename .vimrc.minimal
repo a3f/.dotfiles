@@ -18,5 +18,10 @@ vnoremap x "_x
 set laststatus=2
 cnore <c-b> <c-a>
 cnore <c-a> <c-b>
+nnoremap <up> <c-y>
+nnoremap <down> <c-e>
+nnoremap  <silent>   <tab>  :bnext<CR>
+nnoremap <silent> <s-tab> :bprevious<CR>
+
 set statusline=\ %f%m%r%h%w\ %=%({%{&ff}\|%{(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\")}%k\|%Y}%)\ %([%l,%v][%p%%]\ %)
 
