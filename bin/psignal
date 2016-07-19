@@ -1,8 +1,9 @@
 #!/usr/bin/perl
-
 use strict;
 use warnings;
-my $arg = ($ARGV[0] & ~128) // exit 1;
+
+exit 1 unless @ARGV;
+my $arg = $ARGV[0] & ~128;
 use Inline C => Config =>#force_build => 1 =>
            enable => autowrap =>
            LIBS => '';
