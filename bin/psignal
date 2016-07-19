@@ -1,22 +1,23 @@
 #!/usr/bin/env perl
 
-my $signo;
-BEGIN {
-    $signo = ($ARGV[0] & ~128) // exit(1);
-    use Inline 	C => Config =>#force_build => 1 =>
-                enable => autowrap =>
-                LIBS => '';
-    if ($^O =~ /bsd|darwin/) {
-        eval 'use Inline C => q{ void psignal(unsigned int sig, const char *s); };';
-    } else {
-        eval 'use Inline C => q{ void psignal(int sig, const char *s); };';
-    }
-    die $@ if $@;
-}
-# ^ On Linux, psignal is int?
-use Config qw( %Config );
-use List::MoreUtils qw(firstidx);
+my $arg = ($ARGV[0] & ~128) // exit 1;
+use Inline C => Config =>#force_build => 1 =>
+           enable => autowrap =>
+           LIBS => '';
+use Inline C => q{ 
+    #ifdef BSD
+        void psignal(unsigned int, const char *);
+    #else
+        void psignal(int, const char *);
+    #endif
+};
 
-my $signame = (split ' ', $Config{sig_name})[firstidx { /$_/ } (split ' ', $Config{sig_num})];
+use Config '%Config';
+use List::MoreUtils 'firstidx';
 
-psignal($signo, "SIG$signame ($signo)");
+my %h;
+my ($key, $val) = $arg =~ /^(\d+)$/ ? qw(sig_num sig_name) : qw(sig_name sig_num);
+$h{$val} = (split ' ', $Config{$val})[firstidx { /$arg/ } (split ' ', $Config{$key})];
+$h{$key} = $arg;
+
+psignal($h{sig_num}, "SIG$h{sig_name} ($h{sig_num})");
