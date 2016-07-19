@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+
+use Math::BaseCnv;
+
+BEGIN {
+    die "USAGE: 2base BASE [number].\n" unless @ARGV;
+    $base = shift @ARGV;
+    *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
+}
+
+while ($_ = arg) {
+    chomp;
+    $_ .= /_/   ? ''
+        : /^0b/ ? '_2'
+        : /^0x/ ? "_16"
+        : /^0/  ? '_8'
+        :         '_10'
+        ;
+    print &cnv((split /_/) => $base), "\n";
+}
+

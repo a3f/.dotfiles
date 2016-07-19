@@ -1,0 +1,9 @@
+#!/bin/sh
+
+git status &>/dev/null
+if [[ $? == 0 ]];
+then
+    git status
+else
+    false
+fi

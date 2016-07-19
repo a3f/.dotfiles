@@ -1,3 +1,15 @@
+HIGHLIGHT=`echo -e '\033[41m\033[37m'`
+NORMAL=`echo -e '\033[0m'`
+
+color() {
+	if [ $# = 0 ]; then
+		sed $'s,.*,\e[31m&\e[m,' ;
+	else
+		(set -o pipefail;"$@" 2>&1>&3|sed $'s,.*,\e[31m&\e[m,'>&2)3>&1;
+	fi
+		
+}
+
 W='-Wall -Wextra -pedantic'
 lallegro=`pkg-config --cflags --libs allegro-5 allegro_acodec-5 allegro_audio-5 allegro_font-5 allegro_image-5 allegro_main-5 allegro_dialog-5 allegro_primitives-5 allegro_ttf-5`
 
@@ -6,11 +18,9 @@ alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 
-HIGHLIGHT=`echo -e '\033[41m\033[37m'`
-NORMAL=`echo -e '\033[0m'`
 
 cal () {
-	$(which cal) $@ | sed -e "s/\(`date +%e`\)/$HIGHLIGHT\1$NORMAL/"
+    $(which cal) $@ | sed -e "s/\([\n ]\)\(`date +%e`\)\([\n ]\)/\1$HIGHLIGHT\2$NORMAL\3/"
 }
 cd! () {
 	mkdir -v -p $@;
@@ -27,7 +37,7 @@ alias make='make -j4'
 alias make!='make clean; make -j4'
 alias a='./a.out'
 alias ping='ping -a'
-alias size='size --format=SysV'
+alias size='gsize --format=SysV'
 alias dudir="find . -maxdepth 1 -type d -print | xargs du -sk | sort -rn"
 alias lsnet='sudo arp-scan --localnet --interface '
 alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn | tail -n +2 | sed -n "s/^Nmap scan report for \(.*\)\$/\1/p"'
@@ -53,46 +63,21 @@ alias ed='ed -p:'
 alias gdb='gdb -q'
 alias bc='bc -lq'
 
-# originally by brian d foy
-2h () {
-    if [[ $# -ne 0 ]]
-    then echo $1 |
-        perl -ne 'printf qq|%x\n|, (/^0/ ? oct( $_ ) : $_)'
-    else
-        perl -ne 'printf qq|%x\n|, (/^0/ ? oct( $_ ) : $_)'
-    fi
+alias 2b='2base 2'
+alias 2o='2base 8'
+alias 2d='2base 10'
+alias 2h='2base 16'
+alias 2x='2base 16'
+
+alias .='source'
+source()
+{
+    builtin source "${@:-$HOME/.bashrc}"
 }
-2base () {
-    if [[ $# -ne 0 ]]
-    then echo $1 |
-        perl -ne 'printf qq|%o\n|, (/^0/ ? oct( $_ ) : $_)'
-    else
-        perl -ne 'printf qq|%o\n|, (/^0/ ? oct( $_ ) : $_)'
-    fi
-}
-2o () {
-    if [[ $# -ne 0 ]]
-    then echo $1 |
-        perl -ne 'printf qq|%o\n|, (/^0/ ? oct( $_ ) : $_)'
-    else
-        perl -ne 'printf qq|%o\n|, (/^0/ ? oct( $_ ) : $_)'
-    fi
-}
-2b () {
-    if [[ $# -ne 0 ]]
-    then echo $1 |
-        perl -ne 'printf qq|%b\n|, (/^0/ ? oct( $_ ) : $_)'
-    else
-        perl -ne 'printf qq|%b\n|, (/^0/ ? oct( $_ ) : $_)'
-    fi
-}
-2d () {
-    if [[ $# -ne 0 ]]
-    then echo $1 |
-        perl -ne 'printf qq|%d\n|, (/^0/ ? oct( $_ ) : $_)'
-    else
-        perl -ne 'printf qq|%d\n|, (/^0/ ? oct( $_ ) : $_)'
-    fi
+
+psignal()
+{
+    command psignal "${@:-$?}"
 }
 
 cd()

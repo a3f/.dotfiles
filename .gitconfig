@@ -22,3 +22,5 @@
 	default = simple
 [core]
 	editor = nvim
+[commit]
+	verbose = true

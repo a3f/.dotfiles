@@ -8,7 +8,10 @@ my %cmds = (
 	'ubuntu ssh'   => 'ssh -p 2222 a3f:.@localhost'
 );
 
-exec $cmds{"@ARGV"} if $cmds{"@ARGV"};
-print "Unknown command: '@ARGV'", "\n";
+my $cmd = join ' ', splice @ARGV, 0, 2;
+
+
+exec $cmds{$cmd} . " @ARGV" if $cmds{$cmd};
+print "Unknown command: '$cmd'", "\n";
 
 

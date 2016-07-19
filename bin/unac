@@ -1,8 +1,14 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl -CA
+BEGIN {
+    *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
+}
 use utf8;
 use open qw( :encoding(UTF-8) :std );
+
 use Unicode::Normalize;
-while (<>) {
-    print NFD($_) =~ s/[\p{Mn}]//rg;
+
+while ($_ = arg) {
+    chomp;
+    print NFD($_) =~ s/[\p{Mn}]//rg, "\n";
 }
 

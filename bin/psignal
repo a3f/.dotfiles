@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+
+my $signo;
+BEGIN {
+    $signo = ($ARGV[0] & ~128) // exit(1);
+    use Inline 	C => Config =>#force_build => 1 =>
+                enable => autowrap =>
+                LIBS => '';
+    if ($^O =~ /bsd|darwin/) {
+        eval 'use Inline C => q{ void psignal(unsigned int sig, const char *s); };';
+    } else {
+        eval 'use Inline C => q{ void psignal(int sig, const char *s); };';
+    }
+    die $@ if $@;
+}
+# ^ On Linux, psignal is int?
+use Config qw( %Config );
+use List::MoreUtils qw(firstidx);
+
+my $signame = (split ' ', $Config{sig_name})[firstidx { /$_/ } (split ' ', $Config{sig_num})];
+
+psignal($signo, "SIG$signame ($signo)");
