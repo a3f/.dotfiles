@@ -16,7 +16,7 @@ function __prompt_command() {
     PS1+='\[\e[01;34m\]\[\e[00m'
 }
 
-PATH=~/bin:~/doc:$PATH
+PATH=~/bin:~/doc:~/symlinks:$PATH
 PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH
 PATH=/Users/a3f/arm-cs-tools/bin:$PATH
 
