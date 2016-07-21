@@ -1,26 +1,17 @@
-#!/usr/bin/perl
-use strict;
-use warnings;
-
-exit 1 unless @ARGV;
-my $arg = $ARGV[0] & ~128;
-use Inline C => Config =>#force_build => 1 =>
-           enable => autowrap =>
-           LIBS => '';
-use Inline C => q{ 
-    #ifdef BSD
-        void psignal(unsigned int, const char *);
-    #else
-        void psignal(int, const char *);
-    #endif
-};
+#!/usr/bin/env perl
 
 use Config '%Config';
 use List::MoreUtils 'firstidx';
+use POSIX::1003::Signals qw(strsignal);
 
-my %h;
-my ($key, $val) = $arg =~ /^(\d+)$/ ? qw(sig_num sig_name) : qw(sig_name sig_num);
-$h{$val} = (split ' ', $Config{$val})[firstidx { /$arg/ } (split ' ', $Config{$key})];
-$h{$key} = $arg;
+$_ = shift // die "USAGE: $0 SIGNAL\n";
+s/^SIG//i;
 
-psignal($h{sig_num}, "SIG$h{sig_name} ($h{sig_num})");
+my ($key, $val) = qw(sig_num sig_name)[sort 0, /^\d+$/*2 -1];
+my %h = ($key => uc);
+$h{sig_num}  &= ~128;
+my $idx = firstidx { /$h{$key}/ } (split ' ', $Config{$key});
+die "Unknown signal specified\n" if $idx < 0;
+$h{$val} = (split ' ', $Config{$val})[$idx];
+
+print "(SIG$h{sig_name}) ${\strsignal $h{sig_num}}\n";
