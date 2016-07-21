@@ -2,8 +2,8 @@
 use IPC::Open2; 
 $SIG{'__WARN__'} = sub{ die "$0: $!\n" };
 
-my $offset = shift(@ARGV) // "0";
-$offset = oct($offset) if $offset =~ /^0/;
+my $offset = shift // "0";
+$offset = oct $offset if $offset =~ /^0/;
 my $base = $offset >= 2**32 ? 16 : 8;
 
 my $zeroes = $offset % 16;
