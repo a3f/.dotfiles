@@ -1,0 +1,27 @@
+#!/usr/bin/perl -CA
+BEGIN {
+    *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
+}
+use strict;
+use warnings;
+use utf8;
+use open qw( :encoding(UTF-8) :std );
+
+use Unicode::Normalize;
+
+
+while (defined ($_ = arg)) {
+    chomp;
+    $_ = NFD($_) =~ s/\p{Mn}//rg; # strip tashkeel
+    tr # strip dots in arabic
+     {بتث جخ ذ ز ش ض ظ غ ف ق ك ن ة ي }
+     {ٮٮٮ حح د ر س ص ط ع ڡ ٯ ك ں ه ى };
+
+
+    tr # strip in other langs
+     {ٹٺٻټٽپٿڀ ځڂڃڿڄڅچڇ ڈډڊڋڌڍڎڏڐ ڑڒړڔڕږڗژڙ ښڛڜ ڝڞ ڟ ڠ ڡڢڣڤڥڦ ڧڨ ػؼ ڵڶڷڸ ڹںڻڼڽ ۀہۂۃ ۄۅۆۇۏۈۉۊۋ ۍؽؾؿێېۑ ۓ}
+     {ٮٮٮٮٮٮٮٮ حححححححح ددددددددد ررررررررر سسس صص ط ع ڡڡڡڡڡڡ ٯٯ كك لللل ںںںںں هههه ووووووووو ىىىىىىى ے};
+    print $_, "\n";
+}
+
+
