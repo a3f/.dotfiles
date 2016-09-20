@@ -118,6 +118,7 @@ nnoremap <silent> <leader><tab> :b#<cr>
 "make tab in v mode indent code
 vmap <tab> >gv
 vmap <s-tab> <gv
+imap <S-tab> <C-d>
 
 " hidden characters
 set listchars=trail:$
