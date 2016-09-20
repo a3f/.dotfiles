@@ -21,6 +21,6 @@
 [push]
 	default = simple
 [core]
-	editor = nvim
+	editor = nvim -u ~/.vimrc.minimal
 [commit]
 	verbose = true

@@ -62,8 +62,13 @@ def FlagsForFile( filename , **kwargs ):
             '-isystem', '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include',
             '-isystem', '/usr/local/include/eigen3',
             '-I', 'include',
-            '-I', '../include',
             '-I.'
+            '-I', '../include',
+            '-I', './include',
+            '-I', './vendor/ceedling/vendor/unity/src/',
+            '-I', './src',
+            '-I', './test/support',
+            '-I', './build/test/mocks'
             ]
   data = kwargs['client_data']
   filetype = data['&filetype']

@@ -3,12 +3,11 @@
 use Math::BaseCnv;
 
 BEGIN {
-    die "USAGE: 2base BASE [number].\n" unless @ARGV;
-    $base = shift @ARGV;
+    $base = shift // die "USAGE: 2base BASE [number].\n";
     *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
 }
 
-while ($_ = arg) {
+while (defined($_ = arg)) {
     chomp;
     $_ .= /_/   ? ''
         : /^0b/ ? '_2'
@@ -16,6 +15,6 @@ while ($_ = arg) {
         : /^0/  ? '_8'
         :         '_10'
         ;
-    print &cnv((split /_/) => $base), "\n";
+    print cnv((split /_/) => $base), "\n";
 }
 
