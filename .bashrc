@@ -23,23 +23,24 @@ PATH=/Users/a3f/arm-cs-tools/bin:$PATH
 export EDITOR=vim
 #set -o vi
 
-# MacPorts Installer addition on 2015-05-22_at_16:29:47: adding an appropriate PATH variable for use with MacPorts.
-export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
-# Finished adapting your PATH environment variable for use with MacPorts.
-source /opt/local/etc/bash_completion.d/*.bash
-source /opt/local/etc/bash_completion.d/*.sh
 
 # enables usage of ^Q in vim
 stty -ixon > /dev/null 2>/dev/null
 
 
-# Run ondir on login
-eval "`ondir /`"
 
-test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+	# MacPorts Installer addition on 2015-05-22_at_16:29:47: adding an appropriate PATH variable for use with MacPorts.
+	export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+	# Finished adapting your PATH environment variable for use with MacPorts.
+	source /opt/local/etc/bash_completion.d/*.bash
+	source /opt/local/etc/bash_completion.d/*.sh
 
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-. $(brew --prefix)/etc/bash_completion
+	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+	if [ -f $(brew --prefix)/etc/bash_completion ]; then
+		. $(brew --prefix)/etc/bash_completion
+	fi
 fi
 
 source ~/.bash_aliases

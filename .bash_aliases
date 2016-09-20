@@ -11,9 +11,8 @@ color() {
 }
 
 W='-Wall -Wextra -pedantic'
-lallegro=`pkg-config --cflags --libs allegro-5 allegro_acodec-5 allegro_audio-5 allegro_font-5 allegro_image-5 allegro_main-5 allegro_dialog-5 allegro_primitives-5 allegro_ttf-5`
+lallegro='pkg-config --cflags --libs allegro-5 allegro_acodec-5 allegro_audio-5 allegro_font-5 allegro_image-5 allegro_main-5 allegro_dialog-5 allegro_primitives-5 allegro_ttf-5'
 
-alias vim='nvim'
 alias grep='grep --color=auto'
 alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
@@ -58,10 +57,11 @@ alias valgrind='valgrind --dsymutil=yes'
 alias manman='cat ~/txt/sections.txt'
 alias ..='cd ..'
 alias ...='cd ../..'
-alias vi='nvim -u ~/.vimrc.minimal'
 alias ed='ed -p:'
 alias gdb='gdb -q'
 alias bc='bc -lq'
+alias vim='nvim'
+alias vi='nvim -u ~/.vimrc.minimal'
 
 alias 2b='2base 2'
 alias 2o='2base 8'
