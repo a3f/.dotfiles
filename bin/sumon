@@ -1,0 +1,2 @@
+#!/bin/sh
+awk '{print;s+=$'${1:-1}'} END{print "'"$2"'" s}';

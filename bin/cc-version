@@ -1,0 +1,6 @@
+#!/bin/bash
+CC=${CC:-cc}
+VER=${VER:-__VERSION__}
+echo $VER | $CC -xc-header -E - 2>&1 | grep -v ^# | sed 's/^"\|"$//g'
+
+

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+syscallbysysc.d > /tmp/syscallcount
+#printf "s:$?\n"
+#if [[ $? -gt 127 ]]; then
+cat /tmp/syscallcount | sumon 2 "Total: "
+#fi

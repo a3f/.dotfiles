@@ -1,0 +1,15 @@
+#!/usr/bin/perl -CS
+
+use utf8;
+
+BEGIN {
+    *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
+}
+
+while (defined($_ = arg)) {
+    chomp;
+    $_ = oct $_ if /^0/;
+    print chr($_), "\n";
+}
+
+

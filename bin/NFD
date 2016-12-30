@@ -1,0 +1,9 @@
+#!/usr/bin/perl -CA
+BEGIN {
+    *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
+}
+use open qw( :encoding(UTF-8) :std );
+use Unicode::Normalize;
+
+chomp, print NFD($_), "\n" while defined ($_ = arg);
+

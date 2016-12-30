@@ -1,0 +1,7 @@
+#!/usr/bin/env perl
+
+$_ = qx/pbpaste/;
+s/%([[:xdigit:]]{2})/chr(hex($1))/ge;
+s[^\Qhttp://cp.ka-wlan.de/login?dst=][];
+qx"echo $_ | pbcopy";
+
