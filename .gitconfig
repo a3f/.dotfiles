@@ -24,3 +24,5 @@
 	editor = nvim -u ~/.vimrc.minimal
 [commit]
 	verbose = true
+[github]
+	user = a3f

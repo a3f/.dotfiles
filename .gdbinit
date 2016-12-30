@@ -4,7 +4,12 @@ define xxd
 	eval "shell xxd-o %p /tmp/dump.bin", $arg0
 end
 
+#define list2
+    #eval "shell gobjdump -dS file > /tmp/$pid.gdb.S"
+    #eval "shell
+
 # set to 1 to have ARM target debugging as default, use the "arm" command to switch inside gdb
 set $ARM = 0
+set startup-with-shell off
 set $COLOREDPROMPT = 0
 source ~/.gdb/.gdbinit

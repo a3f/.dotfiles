@@ -5,7 +5,7 @@ else
 set background=dark
 endif
 let g:solarized_termcolors=256  
-colorscheme Spacegray
+colorscheme solarized
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -26,7 +26,7 @@ Plugin 'FooSoft/vim-argwrap'
 Bundle 'christoomey/vim-sort-motion'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'scrooloose/nerdtree'
-Plugin 'welle/targets.vim'
+"Plugin 'welle/targets.vim'
 Plugin 'git://git.wincent.com/command-t.git'
 "Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'Valloric/YouCompleteMe'
@@ -40,10 +40,12 @@ Plugin 'xolox/vim-misc'
 "Plugin 'xolox/vim-easytags'
 "Plugin 'rosenfeld/conque-term'
 Plugin 'dag/vim2hs'
-Plugin 'eagletmt/neco-ghc'
+Plugin 'shougo/vimproc.vim'
 Plugin 'eagletmt/ghcmod-vim'
+Plugin 'eagletmt/neco-ghc'
 Plugin 'scrooloose/syntastic'
 Plugin 'ajh17/Spacegray.vim'
+Plugin 'rdnetto/YCM-Generator'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -199,8 +201,8 @@ nnoremap <space> i<space><Esc>
 set clipboard=unnamed
 
 nnoremap x "_x
-nnoremap x "_x
-vnoremap X "_X
+nnoremap X "_X
+vnoremap x "_x
 vnoremap X "_X
 " accumulate yanks instead of overwriting
 nnoremap <leader>y "Ayy

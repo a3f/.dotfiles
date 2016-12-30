@@ -1,4 +1,4 @@
 #!/bin/bash
-CC=${2:-cc}
+CC=${CC:-cc}
 echo "#include <$1>" | $CC --std=c11 -xc-header -H - -o /dev/null 2>&1 | head -n1 | sed 's/^\. //'
 

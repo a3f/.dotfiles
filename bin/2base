@@ -1,20 +1,31 @@
 #!/usr/bin/env perl
 
 use Math::BaseCnv;
+use experimental 'smartmatch';
 
+my %flags;
 BEGIN {
-    $base = shift // die "USAGE: 2base BASE [number].\n";
+    if ($ARGV[0] =~ /^-/) {
+        $flags = shift;
+        $flags{delim} = 1 if $flags =~ /d/;
+    }
+    $base = shift // die "USAGE: 2base [-d] BASE [number].\n";
     *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
 }
 
 while (defined($_ = arg)) {
     chomp;
-    $_ .= /_/   ? ''
-        : /^0b/ ? '_2'
-        : /^0x/ ? "_16"
-        : /^0/  ? '_8'
-        :         '_10'
+    s/[,_](?!\d+$)//g;
+    $_ .= /%/      ? ''
+        : /^0b/    ? '%2'
+        : /^0x/    ? '%16'
+        : /^0o?/   ? '%8'
+        :            '%10'
         ;
-    print cnv((split /_/) => $base), "\n";
+    $_ = length if s/%1$//;
+    $num = reverse cnv((split /%/) => $base);
+    $num =~ s/(...)(?=.)/$1,/g  if $flags{delim} && $base == 10;
+    $num =~ s/(....)(?=.)/$1_/g if $flags{delim} && $base ~~ [2,8,16];
+    print scalar reverse($num), "\n";
 }
 

@@ -55,3 +55,11 @@ export DYLD_FORCE_FLAT_NAMESPACE=1
 export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
 # Finished adapting your PATH environment variable for use with MacPorts.
 
+eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+export CPATH="/usr/local/include:$CPATH"
+
+# MacPorts Installer addition on 2016-12-13_at_15:58:31: adding an appropriate PATH variable for use with MacPorts.
+export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+# Finished adapting your PATH environment variable for use with MacPorts.
+

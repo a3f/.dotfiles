@@ -1,4 +1,4 @@
 #!/bin/bash
-CXX=${2:-c++}
+CXX=${CXX:-c++}
 echo "#include <$1>" | $CXX -std=c++11 -xc++-header -H - -o /dev/null 2>&1 | head -n1 | sed 's/^\. //'
 

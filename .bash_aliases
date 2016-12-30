@@ -63,11 +63,12 @@ alias bc='bc -lq'
 alias vim='nvim'
 alias vi='nvim -u ~/.vimrc.minimal'
 
-alias 2b='2base 2'
-alias 2o='2base 8'
-alias 2d='2base 10'
-alias 2h='2base 16'
-alias 2x='2base 16'
+alias 2b='2base -d 2'
+alias 2o='2base -d 8'
+alias 2d='2base -d 10'
+alias 2h='2base -d 16'
+alias 2x='2base -d 16'
+alias 2a='2u'
 
 alias .='source'
 source()
