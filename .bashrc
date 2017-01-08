@@ -60,6 +60,6 @@ export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 export CPATH="/usr/local/include:$CPATH"
 
 # MacPorts Installer addition on 2016-12-13_at_15:58:31: adding an appropriate PATH variable for use with MacPorts.
-export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/Cellar/qt5/5.7.1_1/bin/:$PATH"
 # Finished adapting your PATH environment variable for use with MacPorts.
 

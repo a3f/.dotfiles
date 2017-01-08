@@ -1,1 +1,37 @@
-/Users/a3f/dl/parrotim/examples/TeX-Encode
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Data::Dumper;
+use UI::Bowdlator::Filter;
+use Encode;
+use TeX::Encode;
+
+print "$0 starting..\n";
+my $bowdlator = UI::Bowdlator::Filter->new()
+    or die "Bowdlator server not online\n";
+my $texing = 0;
+my $composed = '';
+while ($bowdlator->getKey(handle_backspace => \$composed)) {
+
+    if ($texing) {
+        if (/\\|[^[:graph:]]/a) {
+            $bowdlator->commit(), next if $composed =~ /^\\$/;
+            $composed = decode 'latex', $composed;
+
+            $bowdlator->commit(\$composed);
+            $texing = 0;
+        } else {
+            $composed .= $_;
+        }
+    } else {
+        if (/\\/) {
+            $composed .= $_;
+            $texing = 1;
+        } else {
+            $bowdlator->commit(\$composed);
+        }
+    }
+
+
+    $bowdlator->suggest($composed);
+}

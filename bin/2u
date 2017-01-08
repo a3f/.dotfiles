@@ -1,6 +1,11 @@
-#!/usr/bin/perl -CS
+#!/usr/bin/perl -CA
 
+use strict;
+use warnings;
 use utf8;
+use charnames qw();
+
+use open qw( :encoding(UTF-8) :std );
 
 BEGIN {
     *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
@@ -8,8 +13,10 @@ BEGIN {
 
 while (defined($_ = arg)) {
     chomp;
-    $_ = oct $_ if /^0/;
-    print chr($_), "\n";
+    $_ = ord unless length > 1;
+    #$_ = oct $_ if /^0/;
+    printf "%s <%c>  %d, Hex %x, Octal %o\n", charnames::viacode($_), ($_)x4;
 }
+
 
 

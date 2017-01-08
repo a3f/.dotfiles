@@ -1,1 +1,60 @@
-/Users/a3f/dl/parrotim/examples/Encode-Arabic-Franco
+#!/usr/bin/perl
+use strict;
+use warnings;
+use UI::Bowdlator::Filter;
+use Encode::Arabic::Franco;
+use charnames ':full';
+use open ':std', ':encoding(UTF-8)';
+use utf8;
+
+print "$0 starting..\n";
+my $bowdlator = UI::Bowdlator::Filter->new()
+    or die "Bowdlator server not online\n";
+
+my $composed = '';
+while ($bowdlator->getKey(handle_backspace => \$composed)) {
+
+    if (/^[^[:graph:]]/a) { # non graphical character ends composition
+        local $_ = $composed;
+        if (s/^[`§]|[§`]$//g) {
+        } else {
+            print "input: $_\t";
+
+            if (/\\/) {
+                s/\\fa?t[h7]a?2/\N{ARABIC FATHATAN}/g;
+                s/\\ka?sra?2/\N{ARABIC KASRATAN}/g;
+                s/\\da?mm?a?2/\N{ARABIC DAMMATAN}/g;
+
+                s/\\fa?t[h7]a?/\N{ARABIC FATHA}/g;
+                s/\\ka?sra?/\N{ARABIC KASRA}/g;
+                s/\\da?mm?a?/\N{ARABIC DAMMA}/g;
+
+                s/\\ma?dd?a?h?$/\N{ARABIC MADDAH ABOVE}/g;
+
+                s/\\s[uo]?k[ou]{0,2}n/\N{ARABIC SUKUN}/g;
+                s/\\sha?dd?a?h?/\N{ARABIC SHADDA}/g;
+
+                s/\\wa?sla?h?/\N{ARABIC LETTER SUPERSCRIPT ALEF}/g;
+
+                s/\\d/\N{ARABIC LETTER DAD}/g;
+                s/\\s/\N{ARABIC LETTER SAD}/g;
+                s/\\th/\N{ARABIC LETTER THAL}/g;
+                s/\\t/ة/g;
+                s/\\z/ظ/g;
+            }
+
+            
+            s/-/ـ/g; # ta6weel
+            $_ = decode "franco-arabic", $_;
+        }
+
+        $composed = $_;
+        print "committed: $composed\n";
+        $bowdlator->commit(\$composed);
+        next;
+    }
+
+    $composed .= $_;
+
+    $bowdlator->suggest($composed);
+}
