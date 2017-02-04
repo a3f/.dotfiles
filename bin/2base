@@ -2,14 +2,11 @@
 
 use Math::BaseCnv;
 use experimental 'smartmatch';
+use Getopt::Std;
 
-my %flags;
 BEGIN {
-    if ($ARGV[0] =~ /^-/) {
-        $flags = shift;
-        $flags{delim} = 1 if $flags =~ /d/;
-    }
-    $base = shift // die "USAGE: 2base [-d] BASE [number].\n";
+    getopts 'd';
+    $base = shift // die "USAGE:  [-d] BASE [number].\n";
     *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
 }
 
@@ -24,8 +21,8 @@ while (defined($_ = arg)) {
         ;
     $_ = length if s/%1$//;
     $num = reverse cnv((split /%/) => $base);
-    $num =~ s/(...)(?=.)/$1,/g  if $flags{delim} && $base == 10;
-    $num =~ s/(....)(?=.)/$1_/g if $flags{delim} && $base ~~ [2,8,16];
+    $num =~ s/(...)(?=.)/$1,/g  if $opt_d && $base == 10;
+    $num =~ s/(....)(?=.)/$1_/g if $opt_d && $base ~~ [2,8,16];
     print scalar reverse($num), "\n";
 }
 
