@@ -10,6 +10,6 @@ end
 
 # set to 1 to have ARM target debugging as default, use the "arm" command to switch inside gdb
 set $ARM = 0
-set startup-with-shell off
 set $COLOREDPROMPT = 0
 source ~/.gdb/.gdbinit
+set startup-with-shell off

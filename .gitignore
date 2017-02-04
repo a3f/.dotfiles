@@ -1,12 +1,14 @@
 *
 !bin/
-*.swp
+*.sw*
 GTAGS
 GRTAGS
 GPATH
 
 
 
-bin/.DS_Store
+
+.DS_Store
+*.dSYM/
 
 bin/try.out

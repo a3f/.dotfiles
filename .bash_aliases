@@ -25,6 +25,10 @@ cd! () {
 	mkdir -v -p $@;
 	cd $@;
 }
+pushd! () {
+	mkdir -v -p $@;
+	pushd $@;
+}
 if [[ $OSTYPE == darwin* ]]; then
 alias tac='tail -r'
 alias unq='xattr -d com.apple.quarantine'
@@ -69,6 +73,14 @@ alias 2d='2base -d 10'
 alias 2h='2base -d 16'
 alias 2x='2base -d 16'
 alias 2a='2u'
+
+xdd()
+{
+    xml sel -N \
+        x="http://www.ethernet-powerlink.org" \
+        xsi="http://www.w3.org/2001/XMLSchema-instance" \
+        -t -m "$2" -c . -n "$1"
+}
 
 alias .='source'
 source()

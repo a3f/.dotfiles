@@ -1,2 +1,2 @@
-#!/bin/sh
-echo $@
+#!/bin/bash
+if [[ "$0" == */args ]]; then echo $@; else echo $#; fi;

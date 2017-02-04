@@ -13,9 +13,12 @@ BEGIN {
 
 while (defined($_ = arg)) {
     chomp;
-    $_ = ord unless length > 1;
-    #$_ = oct $_ if /^0/;
-    printf "%s <%c>  %d, Hex %x, Octal %o\n", charnames::viacode($_), ($_)x4;
+    $_ = chr hex $1 if /^U\+([[:xdigit:]]+)$/;
+    for (split '') {
+        $_ = ord;
+        printf "%s <%c>  %d, Hex %x, Octal %o\n", charnames::viacode($_), ($_)x4;
+    }
+    print "\n";
 }
 
 

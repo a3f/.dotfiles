@@ -2,6 +2,6 @@
 
 $_ = qx/pbpaste/;
 s/%([[:xdigit:]]{2})/chr(hex($1))/ge;
-s[^\Qhttp://cp.ka-wlan.de/login?dst=][];
+s[^.*\?.*=][];
 qx"echo $_ | pbcopy";
 

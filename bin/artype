@@ -1,0 +1,63 @@
+#!/usr/bin/perl -CA
+use strict;
+use warnings;
+use utf8;
+use open qw( :encoding(UTF-8) :std );
+
+my $display_only = -t STDOUT;
+
+
+use constant {
+    ISOLATED => 0,
+    ENDING => 1,
+    MIDDLE => 2,
+    BEGINNING => 3,
+};
+
+my %shapes = (
+    أ => [qw/ﺃ ﺄ/],
+    ب => [qw/ﺏ ﺐ ﺒ ﺑ/],
+    ت => [qw/ﺕ ﺖ ﺘ ﺗ/],
+    ث => [qw/ﺙ ﺚ ﺜ ﺛ/],
+    ج => [qw/ﺝ ﺞ ﺠ ﺟ/],
+    ح => [qw/ﺡ ﺢ ﺤ ﺣ/],
+    خ => [qw/ﺥ ﺦ ﺨ ﺧ/],
+    د => [qw/ﺩ ﺪ/],
+    ذ => [qw/ﺫ ﺬ/],
+    ر => [qw/ﺭ ﺮ/],
+    ز => [qw/ﺯ ﺰ/],
+    س => [qw/ﺱ ﺲ ﺴ ﺳ/],
+    ش => [qw/ﺵ ﺶ ﺸ ﺷ/],
+    ص => [qw/ﺹ ﺺ ﺼ ﺻ/],
+    ض => [qw/ﺽ ﺾ ﻀ ﺿ/],
+    ط => [qw/ﻁ ﻂ ﻄ ﻃ/],
+    ظ => [qw/ﻅ ﻆ ﻈ ﻇ /],
+    ع => [qw/ﻉ ﻊ ﻌ ﻋ/],
+    غ => [qw/ﻍ ﻎ ﻐ ﻏ/],
+    ف => [qw/ﻑ ﻒ ﻔ ﻓ/],
+    ق => [qw/ﻕ ﻖ ﻘ ﻗ/],
+    ك => [qw/ﻙ ﻚ ﻜ ﻛ/],
+    ل => [qw/ﻝ ﻞ ﻠ ﻟ/],
+    م => [qw/ﻡ ﻢ ﻤ ﻣ/],
+    ن => [qw/ﻥ ﻦ ﻨ ﻧ/],
+    ه => [qw/ﻩ ﻪ ﻬ ﻫ/],
+    و => [qw/ﻭ ﻮ/],
+    ي => [qw/ﻱ ﻲ ﻴ ﻳ/],
+    آ => [qw/ﺁ ﺂ/],
+    ة => [qw/ﺓ ﺔ/],
+    ى => [qw/ﻯ ﻰ/],
+);
+
+local $/;
+$_ = <>;
+
+s/(\p{InArabic}+)/reverse $1/ge;
+
+s/\b(\p{InArabic})\b/$shapes{$1}[ISOLATED] || $1/ge;
+s/\b(\p{InArabic})/$shapes{$1}[ENDING] || $1/ge;
+s/(\p{InArabic})\b/$shapes{$1}[BEGINNING] || $1/ge;
+s/(\p{InArabic})/$shapes{$1}[MIDDLE] || $1/ge;
+
+print $_;
+
+

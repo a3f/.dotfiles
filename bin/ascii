@@ -1,0 +1,14 @@
+#!/usr/bin/perl -CA
+
+use utf8;
+
+BEGIN {
+    *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
+}
+
+while (defined($_ = arg)) {
+    chomp;
+    print s/[^[:ascii:]]//gr;
+}
+
+

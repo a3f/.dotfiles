@@ -1,0 +1,9 @@
+#!/usr/bin/perl -CASD
+use StdinFilter;
+use Lingua::AR::Tashkeel qw(strip);
+
+filter {
+    chomp;
+    print strip($_), "\n"
+}
+

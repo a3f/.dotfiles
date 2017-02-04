@@ -1,9 +1,5 @@
 syntax enable
-if $TERM_PROGRAM=="Apple_Terminal"
 set background=light
-else
-set background=dark
-endif
 let g:solarized_termcolors=256  
 colorscheme solarized
 set nocompatible              " be iMproved, required
@@ -146,9 +142,12 @@ set hlsearch
 set incsearch
 nnoremap <silent> <leader>n :noh<CR>
 " left-hand line-wise navigation
-nnoremap <silent> <c-q> <c-y>
+nnoremap <C-q> <C-y>
 nnoremap <up> <C-y>
 nnoremap <down> <C-e>
+" line-wise navigation for when <c-q> and <c-e> are remapped to <m-f> and <m-b>
+nnoremap <m-b> <c-y>
+nnoremap <m-f> <c-e>
 " highlist last insertion
 nnoremap gV `[v`]
 hi MatchParen cterm=standout

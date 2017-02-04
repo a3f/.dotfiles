@@ -1,0 +1,20 @@
+#!/usr/bin/perl -CA
+
+use strict;
+use warnings;
+use utf8;
+use open qw( :encoding(UTF-8) :std );
+use Getopt::Std;
+
+getopts 'n', \my %opts;
+
+my ($pattern, $replacement, $modifiers) = @ARGV;
+defined $pattern or die "Pattern required\n";
+defined $replacement or die "Replacement required\n";
+$modifiers //= 'g';
+
+my $cmd = "ack -l '$pattern' --print0 | xargs -0 perl -Mutf8 -CA -pi -Mwarnings -Mstrict -E 's $pattern$replacement$modifiers'";
+die "$cmd\n" if $opts{n};
+
+exec $cmd;
+
