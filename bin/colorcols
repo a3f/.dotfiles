@@ -1,0 +1,23 @@
+#!/usr/bin/env perl
+
+use Term::ANSIColor;
+use Getopt::Std;
+use Tie::Cycle;
+tie my $color, 'Tie::Cycle', [ qw( blue green  magenta  cyan  white yellow ) ];
+getopts 'n:t:', \my %opts;
+my $sep = $opts{t} // ' ';
+
+
+while (<>) {
+    my $out = '';
+    my $max = $opts{n};
+    for (split /($sep+)/, $_) {
+        $out .= defined $max && --$max < 0 ? $_ : colored([$color], $_);
+        $out .= $1;
+    }
+
+    print $out;
+    (tied $color)->reset;
+}
+
+

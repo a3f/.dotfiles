@@ -31,7 +31,7 @@ stty -ixon > /dev/null 2>/dev/null
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	# MacPorts Installer addition on 2015-05-22_at_16:29:47: adding an appropriate PATH variable for use with MacPorts.
-	export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
+	export PATH="$PATH:/usr/bin:/opt/local/bin:/opt/local/sbin"
 	# Finished adapting your PATH environment variable for use with MacPorts.
 	source /opt/local/etc/bash_completion.d/*.bash
 	source /opt/local/etc/bash_completion.d/*.sh
@@ -46,20 +46,12 @@ fi
 source ~/.bash_aliases
 
 
-##
-# Your previous /Users/a3f/.bash_profile file was backed up as /Users/a3f/.bash_profile.macports-saved_2016-07-17_at_08:41:56
-##
-
-# MacPorts Installer addition on 2016-07-17_at_08:41:56: adding an appropriate PATH variable for use with MacPorts.
 export DYLD_FORCE_FLAT_NAMESPACE=1
-export PATH="/opt/local/bin:/opt/local/sbin:$PATH"
-# Finished adapting your PATH environment variable for use with MacPorts.
+export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 
 eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
-export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/usr/local/Cellar/perl/5.24.0_1/lib/perl5/5.24.0/darwin-thread-multi-2level/CORE:/usr/local/lib:$LD_LIBRARY_PATH"
 export CPATH="/usr/local/include:$CPATH"
 
-# MacPorts Installer addition on 2016-12-13_at_15:58:31: adding an appropriate PATH variable for use with MacPorts.
-export PATH="/opt/local/bin:/opt/local/sbin:/usr/local/Cellar/qt5/5.7.1_1/bin/:$PATH"
-# Finished adapting your PATH environment variable for use with MacPorts.
+export PATH="/usr/local/Cellar/qt5/5.7.1_1/bin/:$PATH"
 

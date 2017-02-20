@@ -73,7 +73,8 @@ alias 2d='2base -d 10'
 alias 2h='2base -d 16'
 alias 2x='2base -d 16'
 alias 2a='2u'
-
+# paged ack
+alias pgack='ack --pager="less -R"'
 xdd()
 {
     xml sel -N \
