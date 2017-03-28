@@ -53,5 +53,5 @@ eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
 export LD_LIBRARY_PATH="/usr/local/Cellar/perl/5.24.0_1/lib/perl5/5.24.0/darwin-thread-multi-2level/CORE:/usr/local/lib:$LD_LIBRARY_PATH"
 export CPATH="/usr/local/include:$CPATH"
 
-export PATH="/usr/local/Cellar/qt5/5.7.1_1/bin/:$PATH"
-
+export PATH="/usr/local/Cellar/qt5/5.8.0_1/bin/:$PATH"
+source ~/perl5/perlbrew/etc/bashrc

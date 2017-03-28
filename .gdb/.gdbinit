@@ -1,4 +1,3 @@
-################################################################################
 # INSTALL INSTRUCTIONS: save as ~/.gdbinit
 #
 # DESCRIPTION: A user-friendly gdb configuration file, for x86/x86_64 and ARM platforms.
@@ -70,6 +69,10 @@
 
 # __________________gdb options_________________
 
+# set to 1 to have ARM target debugging as default, use the "arm" command to switch inside gdb
+set $ARM = 0
+# set to 0 if you have problems with the colorized prompt - reported by Plouj with Ubuntu gdb 7.2
+set $COLOREDPROMPT = 1
 # color the first line of the disassembly - default is green, if you want to change it search for
 # SETCOLOR1STLINE and modify it :-)
 set $SETCOLOR1STLINE = 0
@@ -94,7 +97,7 @@ set $ARMOPCODES = 1
 # x86 disassembly flavor: 0 for Intel, 1 for AT&T
 set $X86FLAVOR = 0
 # use colorized output or not
-set $USECOLOR = 0
+set $USECOLOR = 1
 # to use with remote KDP
 set $KDP64BITS = -1
 set $64BITS = 0
@@ -207,7 +210,7 @@ end
 # this way anyone can have their custom prompt - argp's idea :-)
 # can also be used to redefine anything else in particular the colors aka theming
 # just remap the color variables defined above
-source ~/.gdb/.gdbinit.local
+#source ~/.gdbinit.local
 
 # can't use the color functions because we are using the set command
 if $COLOREDPROMPT == 1
@@ -3152,50 +3155,6 @@ end
 
 
 # ____________________misc____________________
-define hook-stop
-    if (sizeof(void*) == 8)
-        set $64BITS = 1
-    else
-        set $64BITS = 0
-    end
-
-    if ($KDP64BITS != -1)
-        if ($KDP64BITS == 0)
-            set $64BITS = 0
-        else
-            set $64BITS = 1
-        end
-    end
-
-    # Display instructions formats
-    if $ARM == 1
-        if $ARMOPCODES == 1
-            set arm show-opcode-bytes 1
-        end
-    else
-        if $X86FLAVOR == 0
-            set disassembly-flavor intel
-        else
-            set disassembly-flavor att
-        end
-    end
-
-    # this makes 'context' be called at every BP/step
-    if ($SHOW_CONTEXT > 0)
-        context
-    end
-    if ($SHOW_NEST_INSN > 0)
-        set $x = $_nest
-        while ($x > 0)
-            printf "\t"
-            set $x = $x - 1
-        end
-    end
-end
-document hook-stop
-Syntax: hook-stop
-| !!! FOR INTERNAL USE ONLY - DO NOT CALL !!!
-end
 
 
 # original by Tavis Ormandy (http://my.opera.com/taviso/blog/index.dml/tag/gdb) (great fix!)
@@ -3993,4 +3952,3 @@ end
 #
 #   Version 2
 #     Radix bugfix by elaine
-

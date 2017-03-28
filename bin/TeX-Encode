@@ -5,6 +5,12 @@ use Data::Dumper;
 use UI::Bowdlator::Filter;
 use Encode;
 use TeX::Encode;
+use utf8;
+
+my %char_for = (
+    '\-' => 'ـ',
+    '\3' => 'ّ',
+);
 
 print "$0 starting..\n";
 my $bowdlator = UI::Bowdlator::Filter->new()
@@ -16,7 +22,7 @@ while ($bowdlator->getKey(handle_backspace => \$composed)) {
     if ($texing) {
         if (/\\|[^[:graph:]]/a) {
             $bowdlator->commit(), next if $composed =~ /^\\$/;
-            $composed = decode 'latex', $composed;
+            $composed = $char_for{$composed} // decode 'latex', $composed;
 
             $bowdlator->commit(\$composed);
             $texing = 0;

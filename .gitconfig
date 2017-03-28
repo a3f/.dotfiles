@@ -24,5 +24,10 @@
 	editor = nvim -u ~/.vimrc.minimal
 [commit]
 	verbose = true
+	gpgsign = true
 [github]
 	user = a3f
+[gpg]
+	program = /usr/local/bin/gpg
+[pull]
+	rebase = preserve

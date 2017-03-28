@@ -3,7 +3,7 @@
 use Term::ANSIColor;
 use Getopt::Std;
 use Tie::Cycle;
-tie my $color, 'Tie::Cycle', [ qw( blue green  magenta  cyan  white yellow ) ];
+tie my $color, 'Tie::Cycle', [ qw( blue green  magenta  cyan  ) ];
 getopts 'n:t:', \my %opts;
 my $sep = $opts{t} // ' ';
 

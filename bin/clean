@@ -1,0 +1,69 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Getopt::Std;
+use File::chdir;
+
+getopts 'rR:nvDM', \my %opts;
+my $DRY_RUN = $opts{n};
+my $VERBOSE = $opts{v};
+my %dont_clean = (
+    dzil => $opts{D},
+    make => $opts{M},
+);
+
+my $NUL = $^O eq 'MSWin32' ? 'NUL' : '/dev/null';
+@ARGV or die "Usage: $0 [options] dir...\n";
+
+for my $dirname (@ARGV) {
+    my $depth = $opts{R} // $opts{r} // 0;
+    clean($dirname, $depth);
+}
+sub clean {
+    my ($dirname, $depth) = @_;
+    opendir(my $dh, $dirname) or die "$dirname doesn't exist\n";
+    my @files = readdir($dh) or die "$dirname unreadable\n";
+    closedir $dh;
+
+    print ":: Cleaning $dirname\n" if $VERBOSE;
+    local $CWD = $dirname;
+    my @subdirs;
+    for (@files) {
+        next if /^[.]/;
+        push @subdirs, $_ and next if -d;
+        next unless -f;
+
+        my $out;
+        if ($_ eq 'Makefile' && !$dont_clean{make}) {
+            $out = make_clean() and print ":: Cleaning Makefile project\n";
+        } elsif ($_ eq 'dist.ini' && !$dont_clean{dzil}) {
+            $out = dzil_clean() and print ":: Cleaning Dist::Zilla project\n";
+        } else {
+            next;
+        }
+
+        print "$out";
+    }
+
+    return unless $depth--;
+    foreach my $subdir (@subdirs) {
+        clean("$subdir", $depth);
+    } 
+}
+
+sub make_clean {
+    my $dry_run = $DRY_RUN ? '-n' : '';
+    my $out = `make $dry_run clean 2>&1`;
+    return $out if $? == 0;
+
+    print $out, "\n" if $VERBOSE;
+    return undef;
+}
+sub dzil_clean {
+    my $dry_run = $DRY_RUN ? '-n' : '';
+    my $out = `dzil clean $dry_run 2>&1`;
+    return $out if $? == 0;
+
+    print $out, "\n" if $VERBOSE;
+    return undef;
+}

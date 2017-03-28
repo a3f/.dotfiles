@@ -1,0 +1,20 @@
+#!/usr/bin/perl
+use WebService::KVV::Live::Stop;
+
+use strict;
+use warnings;
+use Data::Dumper::Table;
+use Data::Visitor::Callback;
+use utf8;
+use open qw( :encoding(UTF-8) :std );
+
+my $stop = WebService::KVV::Live::Stop->new($ARGV[0] // 'Kronenplatz');
+my @entries = $stop->departures;
+Data::Visitor::Callback->new(
+    'JSON::PP::Boolean' => sub { $_ = $_ ? 'true' : 0 }
+)->visit(@entries);
+my $table = Tabulate \@entries;
+$table =~ s/^.*\n//; # remove object type
+
+print $table;
+

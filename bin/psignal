@@ -9,7 +9,7 @@ s/^SIG//i;
 
 my ($key, $val) = qw(sig_num sig_name)[sort 0, /^\d+$/*2 -1];
 my %h = ($key => uc);
-$h{sig_num}  &= ~128;
+$h{sig_num}  = $h{sig_num} >= 128 ? $h{sig_num} & ~128 : 0;
 my $idx = firstidx { /$h{$key}/ } (split ' ', $Config{$key});
 die "Unknown signal specified\n" if $idx < 0;
 $h{$val} = (split ' ', $Config{$val})[$idx];
