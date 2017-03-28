@@ -65,7 +65,6 @@ alias ed='ed -p:'
 alias gdb='gdb -q'
 alias bc='bc -lq'
 alias vim='nvim'
-alias vi='nvim -u ~/.vimrc.minimal'
 
 alias 2b='2base -d 2'
 alias 2o='2base -d 8'

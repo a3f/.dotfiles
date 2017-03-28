@@ -33,3 +33,27 @@ set autoindent
 
 set statusline=\ %f%m%r%h%w\ %=%({%{&ff}\|%{(&fenc==\"\"?&enc:&fenc).((exists(\"+bomb\")\ &&\ &bomb)?\",B\":\"\")}%k\|%Y}%)\ %([%l,%v][%p%%]\ %)
 
+let mapleader=' '
+
+vmap <tab> >gv
+vmap <s-tab> <gv
+imap <S-tab> <C-d>
+nnoremap <silent> <leader>n :noh<CR>
+nnoremap x "_x
+nnoremap X "_X
+vnoremap x "_x
+vnoremap X "_X
+
+set wrap linebreak nolist
+"j/k enter wrapped lines
+nnoremap j gj
+nnoremap k gk
+
+vnoremap j gj
+vnoremap k gk
+" ctrl+j breaks line
+nnoremap <c-j> a<CR><Esc>k$ 
+
+autocmd BufRead,BufNewFile *.hsc set filetype=haskell
+autocmd BufRead,BufNewFile *.h   set syntax=c
+colors solarized

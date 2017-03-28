@@ -20,7 +20,7 @@ PATH=~/bin:~/doc:~/symlinks:$PATH
 PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH
 PATH=/Users/a3f/arm-cs-tools/bin:$PATH
 
-export EDITOR=vim
+export EDITOR=vi
 #set -o vi
 
 

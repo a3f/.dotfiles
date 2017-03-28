@@ -61,7 +61,10 @@ def FlagsForFile( filename , **kwargs ):
             '-isystem', '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/usr/include',
             '-isystem', '/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include',
             '-isystem', '/usr/local/include/eigen3',
-            '-I', '/usr/local/Cellar/glib/2.48.2/include/glib-2.0'
+            '-isystem', '/opt/local/lib/perl5/5.24/darwin-thread-multi-2level/CORE',
+            '-I/Users/a3f/pse/Wireshark',
+            '-I/usr/local/Cellar/glib/2.50.2/include/glib-2.0',
+            '-I/usr/local/Cellar/glib/2.50.2/lib/glib-2.0/include',
             '-I', 'include',
             '-I.'
             '-I', '../include',

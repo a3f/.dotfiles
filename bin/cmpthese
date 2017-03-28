@@ -1,0 +1,77 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Text::Table;
+
+my @vals = @ARGV;
+
+my @rows;
+
+for my $row_val ( @vals ) {
+    my @row;
+
+    # Column 0 = test name
+    push @row, $row_val;
+
+    # Column 1 = performance
+    my $row_rate = $row_val;
+
+    # We assume that we'll never get a 0 rate.
+    my $rate = 1.0 / $row_rate;
+
+    # Only give a few decimal places before switching to sci. notation,
+    # since the results aren't usually that accurate anyway.
+
+    # Columns 2..N = performance ratios
+    my $skip_rest = 0;
+    for ( my $col_num = 0 ; $col_num < @vals ; ++$col_num ) {
+        my $col_val = $vals[$col_num];
+        my $out;
+        if ( $skip_rest ) {
+            $out = '';
+        }
+        elsif ( $col_val eq $row_val ) {
+            $out = "--";
+            # $skip_rest = 1;
+        }
+        else {
+            my $col_rate = $col_val;
+            $out = sprintf( "%+.0f%%", 100*$row_rate/$col_rate - 100 );
+        }
+        push @row, $out;
+    }
+    push @rows, \@row;
+}
+
+my $tb = Text::Table->new(undef, @vals);
+$tb->load(@rows);
+print $tb;
+
+=head1 AUTHORS
+
+Jarkko Hietaniemi <jhi@iki.fi>, Tim Bunce <Tim.Bunce@ig.co.uk>
+
+=head1 MODIFICATION HISTORY
+
+September 8th, 1994; by Tim Bunce.
+
+March 28th, 1997; by Hugo van der Sanden: added support for code references and the already documented 'debug' method; revamped documentation.
+
+April 04-07th, 1997: by Jarkko Hietaniemi, added the run-for-some-time functionality.
+
+September, 1999; by Barrie Slaymaker: math fixes and accuracy and efficiency tweaks. Added C<cmpthese()>. A result is now returned from C<timethese()>. Exposed C<countit()> (was C<runfor()>).
+
+December, 2001; by Nicholas Clark: make C<timestr()> recognise the style 'none' and return an empty string. If cmpthese is calling timethese, make it pass the style in. (so that 'none' will suppress output). Make sub new dump its debugging output to STDERR, to be consistent with everything else. All bugs found while writing a regression test.
+
+September, 2002; by Jarkko Hietaniemi: add ':hireswallclock' special tag.
+
+February, 2004; by Chia-liang Kao: make cmpthese and timestr use time statistics for children instead of parent when the style is 'nop'.
+
+November, 2007; by Christophe Grosjean: make cmpthese and timestr compute time consistently with style argument, default is 'all' not 'noc' any more.
+
+March, 2017; by Ahmad Fatoum: copied this out of v5.24.0's L<Benchmark>C<::cmpthese>
+
+
+=cut

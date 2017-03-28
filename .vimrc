@@ -131,7 +131,7 @@ set formatoptions-=t
 set autoindent
 vmap <C-c> <plug>NERDCommenterNested
 nmap <C-c> <plug>NERDCommenterInvert
-nnoremap <silent> = :ArgWrap<CR>
+"nnoremap <silent> = :ArgWrap<CR>
 
 """"""""""""""""""""
 """" Navigation """"
@@ -234,6 +234,7 @@ let g:ycm_always_populate_location_list = 1
 set include-=i
 "set foldmethod=syntax
 "set foldlevel=99
+nnoremap <leader>s :setlocal spell spelllang=en_us<CR>
 " jump to decl/def
 nnoremap <leader>g :YcmCompleter GoTo<CR>
 nnoremap <leader>G :YcmCompleter GoToDefinitionElseDeclaration<CR>
@@ -252,6 +253,7 @@ nnoremap <F9> :lnext<CR>
 """" File specific """"
 """""""""""""""""""""""
 autocmd BufRead,BufNewFile *.hsc set filetype=haskell
+autocmd BufRead,BufNewFile *.h   set syntax=c
 autocmd VimLeave *.* :mksession! ~/.vimsession<CR>
 "map ZZ :mksession! ~/.vimsession<CR>
 "source ~/.vimsession 3
