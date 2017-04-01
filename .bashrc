@@ -43,9 +43,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 fi
 
-source ~/.bash_aliases
-
-
+export MANPATH="$HOME/man:$MANPATH"
 export DYLD_FORCE_FLAT_NAMESPACE=1
 export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 
@@ -55,3 +53,8 @@ export CPATH="/usr/local/include:$CPATH"
 
 export PATH="/usr/local/Cellar/qt5/5.8.0_1/bin/:$PATH"
 source ~/perl5/perlbrew/etc/bashrc
+
+if [ -f ~/.bash_aliases ]; then
+. ~/.bash_aliases
+fi
+

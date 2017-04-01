@@ -34,6 +34,7 @@ alias tac='tail -r'
 alias unq='xattr -d com.apple.quarantine'
 alias ldd='otool -L'
 fi
+alias print='echo'
 alias ll='ls -hkAl'
 alias ls='ls -GF'
 alias make='make -j4'
