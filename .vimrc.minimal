@@ -19,6 +19,9 @@ inoremap <s-Tab> <c-d>
 set laststatus=2
 cnore <c-b> <c-a>
 cnore <c-a> <c-b>
+
+cabbr <expr> %% expand('%:p:h')
+
 nnoremap <up> <c-y>
 nnoremap <down> <c-e>
 nnoremap  <silent>   <tab>  :bnext<CR>
@@ -56,4 +59,5 @@ nnoremap <c-j> a<CR><Esc>k$
 
 autocmd BufRead,BufNewFile *.hsc set filetype=haskell
 autocmd BufRead,BufNewFile *.h   set syntax=c
+autocmd FileType make setlocal noexpandtab
 colors solarized

@@ -42,6 +42,10 @@ Plugin 'eagletmt/neco-ghc'
 Plugin 'scrooloose/syntastic'
 Plugin 'ajh17/Spacegray.vim'
 Plugin 'rdnetto/YCM-Generator'
+Plugin 'godlygeek/tabular'
+Plugin 'gtags.vim'
+Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'benmills/vimux'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -98,7 +102,7 @@ endif
 let g:airline_symbols.whitespace = '·'
 let g:airline_symbols.linenr = 'Ξ'
 "let g:airline#extensions#loclist#enabled = 1
-autocmd VimEnter * call AirlineAddTime()
+autocmd VimEnter * call AirlineAddFunc()
 
 """""""""""""""""""""""""
 """" Buffer handling """"
@@ -188,8 +192,8 @@ nnoremap <c-j> a<CR><Esc>k$
 """""""""""""""""
 "
 "replace FALSE or current word with yanked text
-vnoremap S "_dP
-nnoremap S "_diwP
+vnoremap S "0P
+nnoremap S "0P
 "nnoremap <C-space> A<c-x><c-l><Esc>
 "nnoremap <C-@> A<c-x><c-l><Esc>
 nnoremap <space> i<space><Esc>
@@ -207,6 +211,7 @@ vnoremap X "_X
 nnoremap <leader>y "Ayy
 nnoremap <leader>d "Add
 nnoremap <leader>Y "ayy
+" lmao
 nnoremap <leader>D "add
 nnoremap <leader>p "ap
 nnoremap <leader>P "aP
@@ -224,6 +229,7 @@ let g:syntastic_nasm_nasm_args = ["-f macho64"]
 let g:syntastic_asm_nasm_args = ["-f macho64"]
 let g:syntastic_masm_nasm_args = ["-f macho64"]
 let g:syntastic_asm_nasm_args = ["-f macho64"]
+let g:syntastic_vhdl_ghdl_args = ["--workdir=work"]
 let g:ycm_autoclose_preview_window_after_insertion=1
 let g:ycm_open_loclist_on_ycm_diags=1 
 let g:ycm_extra_conf_vim_data = ['&filetype']
@@ -236,10 +242,14 @@ set include-=i
 "set foldlevel=99
 nnoremap <leader>s :setlocal spell spelllang=en_us<CR>
 " jump to decl/def
+nore <C-]> :Gtags<CR><CR>
+nore <C-\> :Gtags -r<CR><CR>
+map + :cn<CR>
+map - :cp<CR>
 nnoremap <leader>g :YcmCompleter GoTo<CR>
 nnoremap <leader>G :YcmCompleter GoToDefinitionElseDeclaration<CR>
 nnoremap <leader>l :YcmForceCompileAndDiagnostics<CR><CR>
-nnoremap <F8> :YcmForceCompileAndDiagnostics<CR><CR>
+"nnoremap <F8> :YcmForceCompileAndDiagnostics<CR><CR>
 nnoremap <leader>L :YcmForceCompileAndDiagnostics<CR><CR>:YcmDiags<CR>
 nnoremap <leader>T :YcmCompleter GetType<CR>
 nnoremap <leader>/ :YcmShowDetailedDiagnostic<CR>
@@ -248,6 +258,17 @@ nnoremap <leader>fmt :%!astyle<CR>``
 nnoremap <leader>a :SyntasticCheck<CR>
 nnoremap <F7> :lprevious<CR>
 nnoremap <F9> :lnext<CR>
+
+ca t Test
+command! -nargs=? Test call s:runtest(<f-args>)
+fun! s:runtest(...)
+    if a:0 == 0
+        VimuxRunLastCommand
+    else
+        VimuxRunCommand a:1
+    endif
+    
+endfun
 
 """""""""""""""""""""""
 """" File specific """"
@@ -292,3 +313,34 @@ function! TextEnableCodeSnip(filetype,start,end,textSnipHl)
   \ contains=@'.group
 endfunction
 
+function! AirlineAddFunc()
+  let spc = g:airline_symbols.space
+  call airline#parts#define_raw('function', '%{Options()}')
+  "call airline#parts#define_raw('func', 'kek')
+  "let g:airline_section_c = airline#section#create_right([' ƒ ', 'function'])
+  if exists("+autochdir") && &autochdir == 1
+      "let g:airline_section_c = airline#section#create_right(['%<', 'path', spc, 'readonly', 'function'])
+  else
+      let g:airline_section_gutter = airline#section#create_left(['%=', 'function'])
+  endif
+  call airline#parts#define_accent('function', 'white')
+endfunction
+
+fu! Options()
+  if &ft=="cpp" || &ft=="perl" || &ft =="c"
+    return ShowFuncName()
+  endif
+  return ""
+endfunction
+
+fun! ShowFuncName()
+  let lnum = line(".")
+  let col = col(".")
+  echohl ModeMsg
+  " FIXME remove args
+  let text = getline(search("^[^ \t#/]\\{2}.*[^:]\s*$", 'bW'))
+  let text = substitute(text, '\((\|=\).*', '', 'g')
+  echohl None
+  call search("\\%" . lnum . "l" . "\\%" . col . "c")
+  return text
+endfun

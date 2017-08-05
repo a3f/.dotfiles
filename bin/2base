@@ -3,22 +3,30 @@
 use Math::BaseCnv;
 use experimental 'smartmatch';
 use Getopt::Std;
+use File::Temp qw(tempdir tempfile);
 
 BEGIN {
-    getopts 'd';
-    $base = shift // die "USAGE:  [-d] BASE [number].\n";
+    getopts 'dt';
+    $base = shift // die "USAGE: $0 [-dt] BASE [number].\n";
     *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
 }
+
+my %power_of = ( K => 1, M => 2, G => 3, T => 4 );
+my $suffix_base = $opt_t ? 1000 : 1024;
 
 while (defined($_ = arg)) {
     chomp;
     s/[,_](?!\d+$)//g;
-    $_ .= /%/      ? ''
-        : /^0b/    ? '%2'
-        : /^0x/    ? '%16'
-        : /^0o?/   ? '%8'
+    $_ .= s/%//    ? ''
+        : s/^0b//  ? '%2'
+        : s/^0x//  ? '%16'
+        : s/^0o?// ? '%8'
         :            '%10'
         ;
+
+    s/(.*?)([KMGT])/$1*($suffix_base**$power_of{$2})/gie;
+    s/(.*?)(?=%\d+)/$1/gee;
+
     $_ = length if s/%1$//;
     $num = reverse cnv((split /%/) => $base);
     $num =~ s/(...)(?=.)/$1,/g  if $opt_d && $base == 10;

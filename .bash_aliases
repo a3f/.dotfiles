@@ -33,18 +33,21 @@ if [[ $OSTYPE == darwin* ]]; then
 alias tac='tail -r'
 alias unq='xattr -d com.apple.quarantine'
 alias ldd='otool -L'
+alias wscmake='cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON -DENABLE_UBSAN=ON -DENABLE_EXTRA_COMPILER_WARNINGS=ON -DENABLE_CCACHE=ON ..'
 fi
 alias print='echo'
 alias ll='ls -hkAl'
 alias ls='ls -GF'
+alias fastbrew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias make='make -j4'
 alias make!='make clean; make -j4'
 alias a='./a.out'
 alias ping='ping -a'
 alias size='gsize --format=SysV'
-alias dudir="find . -maxdepth 1 -type d -print | xargs du -sk | sort -rn"
+alias dudir="find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn"
 alias lsnet='sudo arp-scan --localnet --interface '
 alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn | tail -n +2 | sed -n "s/^Nmap scan report for \(.*\)\$/\1/p"'
+alias lman="man -M$HOME/linux-man"
 man () {
     env \
     LESS_TERMCAP_mb=$(printf "\e[1;31m") \
@@ -57,6 +60,23 @@ man () {
     MANWIDTH=$(($COLUMNS-12)) \
     man "$@"
 }
+
+ar-repack () {
+    (
+        archive=$(realpath "$@")
+        cd $(mktemp -d) || return 1
+        ar -x $archive || rm -rf $(pwd); cd -; return 1
+        llvm-ar crv $archive *.o
+        rm -rf $(pwd)
+    )
+}
+
+hangman()
+{
+    W=$(shuf -n1 /usr/share/dict/words) perl -pe '$_=$s=$ENV{W}=~s/[^.$_$s]/_/gri."\n?"'
+}
+
+alias com='open cool-retro-term.app'
 alias back='cd $OLDPWD'
 alias valgrind='valgrind --dsymutil=yes'
 alias manman='cat ~/txt/sections.txt'
@@ -75,6 +95,7 @@ alias 2x='2base -d 16'
 alias 2a='2u'
 # paged ack
 alias pgack='ack --pager="less -R"'
+alias dziltest='dzil run --nobuild prove-5.24 -lv'
 xdd()
 {
     xml sel -N \

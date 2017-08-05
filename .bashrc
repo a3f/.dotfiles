@@ -7,15 +7,17 @@ function __prompt_command() {
 
     PS1="\[\e[38;5;3m\][\u@\h \w]\\$\[$(tput sgr0)\]\[\e[0m\]"
     if [ $EXIT -eq 0 ]; then
-        PS1+='\[\e[01;32m\]\n✔ ';
+        PS1+="\[\e[01;32m\]\n✔ ";
     elif [ $EXIT -lt 128 ]; then
-        PS1+='\[\e[01;31m\]\n✘ ';
+        PS1+="\[\e[01;31m\]\n✘ ";
     else
-        PS1+='\[\e[01;33m\]\n⚡ ';
+        PS1+="\[\e[01;33m\]\n⚡ ";
     fi
-    PS1+='\[\e[01;34m\]\[\e[00m'
+    PS1+="\[\e[01;34m\]\[\e[00m"
 }
 
+export CCACHE_DIR=~/.ccache
+PATH=/usr/local/opt/ccache/libexec:$PATH
 PATH=~/bin:~/doc:~/symlinks:$PATH
 PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH
 PATH=/Users/a3f/arm-cs-tools/bin:$PATH
@@ -38,23 +40,23 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
 	test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
-	if [ -f $(brew --prefix)/etc/bash_completion ]; then
-		. $(brew --prefix)/etc/bash_completion
+	if [ -f /usr/local/etc/bash_completion ]; then
+		. /usr/local/etc/bash_completion
 	fi
 fi
 
 export MANPATH="$HOME/man:$MANPATH"
-export DYLD_FORCE_FLAT_NAMESPACE=1
+#export DYLD_FORCE_FLAT_NAMESPACE=1
 export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
+#export DYLD_INSERT_LIBRARIES='/System/Library/Frameworks/OpenGL.framework/Resources/GLEngine.bundle/GLEngine' 
+ 
 
-eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
-export LD_LIBRARY_PATH="/usr/local/Cellar/perl/5.24.0_1/lib/perl5/5.24.0/darwin-thread-multi-2level/CORE:/usr/local/lib:$LD_LIBRARY_PATH"
-export CPATH="/usr/local/include:$CPATH"
-
-export PATH="/usr/local/Cellar/qt5/5.8.0_1/bin/:$PATH"
-source ~/perl5/perlbrew/etc/bashrc
+export PATH="/usr/local/Cellar/qt/5.9.1/bin/:$PATH"
+source /opt/cross/setenv.sh
+#source ~/perl5/perlbrew/etc/bashrc
 
 if [ -f ~/.bash_aliases ]; then
 . ~/.bash_aliases
 fi
 
+eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
