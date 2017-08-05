@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+use Number::Bytes::Human qw(format_bytes);
+use Getopt::Std;
+
+BEGIN {
+    *arg = @ARGV ? \&CORE::shift : \&CORE::readline;
+}
+
+while (defined($_ = arg)) {
+    chomp;
+    print format_bytes($_), "\n";
+}
+
+

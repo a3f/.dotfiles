@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if [ "$#" -ne 1 -a "$#" -ne 2 ]; then
+    echo 'error: branch name must be specified'
+    echo 'usage: git rebranch <branch> [<branchpoint-commit>]'
+fi
+
+echo git branch "$1" || exit 1;
+git branch "$1" || exit 1;
+echo git reset --hard "${2:-HEAD~1}" || exit 2;
+git reset --hard "${2:-HEAD~1}" || exit 2;
+echo git checkout "$1"
+git checkout "$1"

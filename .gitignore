@@ -1,14 +1,9 @@
-*
-!bin/
+/*
+/*/
+!/bin/
 *.sw*
 GTAGS
 GRTAGS
 GPATH
-
-
-
-
 .DS_Store
 *.dSYM/
-
-bin/try.out

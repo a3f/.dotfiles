@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+my $nonascii = 0;
+
+while (<>) {
+    if (/[^[:ascii:]]/) {
+        $nonascii++;
+        print STDERR "$ARGV is not ASCII.\n";
+        close ARGV;
+        next;
+    }
+}
+exit 1 if $nonascii;

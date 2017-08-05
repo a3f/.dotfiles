@@ -1,0 +1,23 @@
+#!/usr/bin/env perl
+use WebService::NextEpisode;
+use Tie::File;
+
+my $show = join ' ', @ARGV;
+my $airdate;
+if ($show) {
+    $airdate = WebService::NextEpisode::of($show);
+} else {
+    chomp($show = <DATA>);
+    $airdate = WebService::NextEpisode::of($show);
+}
+
+if ($airdate =~ /\d/) {
+    tie @array, 'Tie::File', $0 or die "cannot tie file\n";
+    $array[-1] = $show;
+    untie @array;
+} else {exit 1;}
+
+print $airdate, "\n";
+
+__DATA__
+Better Call Saul

@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+
+my $ascii = 0;
+
+while (<>) {
+    next if /[^[:ascii:]]/;
+    if (eof) {
+        print STDERR "$ARGV is plain ASCII.\n";
+        $ascii++;
+    }
+}
+exit 1 if $ascii;
