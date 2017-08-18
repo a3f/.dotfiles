@@ -1,5 +1,5 @@
 syntax enable
-set background=light
+set background=dark
 let g:solarized_termcolors=256  
 colorscheme solarized
 set nocompatible              " be iMproved, required
@@ -47,9 +47,12 @@ Plugin 'gtags.vim'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'benmills/vimux'
 
+let g:VimuxRunnerIndex=3
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
-filetype plugin indent on    " required
+filetype plugin on    " required
+filetype indent on    " required
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
 "
@@ -258,8 +261,13 @@ nnoremap <leader>fmt :%!astyle<CR>``
 nnoremap <leader>a :SyntasticCheck<CR>
 nnoremap <F7> :lprevious<CR>
 nnoremap <F9> :lnext<CR>
+nnoremap <left> :lprevious<CR>
+nnoremap <right> :lnext<CR>
+
+command! -nargs=0 Spellcheck setlocal spell spelllang=en_us
 
 ca t Test
+
 command! -nargs=? Test call s:runtest(<f-args>)
 fun! s:runtest(...)
     if a:0 == 0

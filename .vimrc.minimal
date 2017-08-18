@@ -22,6 +22,8 @@ cnore <c-a> <c-b>
 
 cabbr <expr> %% expand('%:p:h')
 
+command! -nargs=0 Spellcheck setlocal spell spelllang=en_us
+
 nnoremap <up> <c-y>
 nnoremap <down> <c-e>
 nnoremap  <silent>   <tab>  :bnext<CR>
@@ -57,6 +59,8 @@ vnoremap k gk
 " ctrl+j breaks line
 nnoremap <c-j> a<CR><Esc>k$ 
 
+filetype plugin on " FIXME doesn't work with ftplugin/gitcommit.vim
+autocmd BufNewFile,BufRead COMMIT_EDITMSG setlocal spell " alternative
 autocmd BufRead,BufNewFile *.hsc set filetype=haskell
 autocmd BufRead,BufNewFile *.h   set syntax=c
 autocmd FileType make setlocal noexpandtab

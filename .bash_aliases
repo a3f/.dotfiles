@@ -33,12 +33,11 @@ if [[ $OSTYPE == darwin* ]]; then
 alias tac='tail -r'
 alias unq='xattr -d com.apple.quarantine'
 alias ldd='otool -L'
-alias wscmake='cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON -DENABLE_UBSAN=ON -DENABLE_EXTRA_COMPILER_WARNINGS=ON -DENABLE_CCACHE=ON ..'
+alias fastbrew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 fi
 alias print='echo'
 alias ll='ls -hkAl'
 alias ls='ls -GF'
-alias fastbrew='HOMEBREW_NO_AUTO_UPDATE=1 brew'
 alias make='make -j4'
 alias make!='make clean; make -j4'
 alias a='./a.out'
@@ -129,6 +128,10 @@ popd()
 {
 	builtin popd "$@" && eval "`ondir \"$OLDPWD\" \"$PWD\"`"
 }              
+
+settitle() {
+    printf "\033k$1\033\\"
+}
 
 alias c4ev3="github-dl c4ev3"
 

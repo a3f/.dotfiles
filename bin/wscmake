@@ -1,0 +1,4 @@
+#!/bin/sh
+export CC="clang -fcolor-diagnostics"
+export CXX="clang++ -fcolor-diagnostics"
+cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON -DENABLE_UBSAN=ON -DENABLE_EXTRA_COMPILER_WARNINGS=ON -DENABLE_CCACHE=ON $@
