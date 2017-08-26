@@ -31,6 +31,7 @@ Plugin 'bling/vim-airline'
 "Plugin 'gilligan/vim-lldb'
 Plugin 'kien/ctrlp.vim'
 Plugin 'a.vim'
+Plugin 'bogado/file-line'
 Plugin 'sjl/gundo.vim'
 Plugin 'xolox/vim-misc'
 "Plugin 'xolox/vim-easytags'
@@ -187,6 +188,8 @@ nnoremap k gk
 
 vnoremap j gj
 vnoremap k gk
+" Jump to line 42 with 42G
+nnoremap <CR> G
 " ctrl+j breaks line
 nnoremap <c-j> a<CR><Esc>k$ 
 
