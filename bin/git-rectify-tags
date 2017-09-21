@@ -1,0 +1,40 @@
+#!/usr/bin/env perl
+
+# example: git rectify-tags -n -pv -i -f CMakeLists.txt '(?<=PROJECT_VERSIOn) ([\d.]+)'
+
+use Getopt::Std;
+
+use strict;
+use warnings;
+
+getopts 'insf:p:', \my %opts;
+my $pattern = $ARGV[0] or die "Must enter pattern!\n";
+my @grep_opts = qw(-P -n --color=always);
+push @grep_opts, '-i' if $opts{i};
+my @tag_opts;
+push @tag_opts, '-s' if $opts{s};
+my $prefix = $opts{p} // '';
+
+
+my $cmd = "git rev-list --all | xargs git grep @grep_opts '$ARGV[0]'";
+
+my (@m, %v);
+for (split "\n", `$cmd`) {
+    my %h;
+    @h{qw(hash file line version)} = split /(?:\e\[[\d;]+m*)?:(?:\[m)?/, $_, 4;
+    next if $opts{f} && $opts{f} ne $h{file};
+    push @m, \%h;
+    $v{$h{version}} = $h{hash};
+}
+
+my $ret = 0;
+while (my ($version, $commit) = each %v) {
+    my ($tag) = $version =~ m/\e\[[\d;]+m\s*(.*?)\s*\e\[m/g;
+    my $cmd = "git tag @tag_opts '$prefix$tag' $commit";
+    print "$cmd\n";
+    if (!$opts{n}) {
+        $ret ||= system $cmd;
+    }
+}
+
+exit $ret

@@ -16,16 +16,16 @@ my $suffix_base = $opt_t ? 1000 : 1024;
 
 while (defined($_ = arg)) {
     chomp;
-    s/[,_](?!\d+$)//g;
-    $_ .= s/%//    ? ''
-        : s/^0b//  ? '%2'
-        : s/^0x//  ? '%16'
-        : s/^0o?// ? '%8'
-        :            '%10'
-        ;
+    s/[,_']//g;
+    unless (/%/) {
+        $_ .= s/^0b//  ? '%2'
+            : s/^0x//  ? '%16'
+            : s/^0o?// ? '%8'
+            :            '%10'
+    }
 
     s/(.*?)([KMGT])/$1*($suffix_base**$power_of{$2})/gie;
-    s/(.*?)(?=%\d+)/$1/gee;
+    s/(.*?)(?=%\d+)/$1/ge;
 
     $_ = length if s/%1$//;
     $num = reverse cnv((split /%/) => $base);

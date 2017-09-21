@@ -1,0 +1,11 @@
+#!/usr/bin/env perl
+
+use Cwd;
+use strict;
+use warnings;
+
+my $name = getcwd() =~ s[.*\/][]r;
+my $name_with_colons = $name =~ s/-/::/gr;
+
+system "hub create athreef/$name -h 'https://metacpan.org/pod/$name_with_colons'" and die $?;
+exec 'git push --set-upstream origin master'

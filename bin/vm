@@ -5,7 +5,17 @@ my %cmds = (
 	'ubuntu start' => 'vboxmanage startvm UbuntuServer --type headless',
 	'ubuntu stop'  => 'vboxmanage controlvm UbuntuServer poweroff',
 	'ubuntu pause' => 'vboxmanage controlvm UbuntuServer savestate',
-	'ubuntu ssh'   => 'ssh ubuntu'
+	'ubuntu ssh'   => 'ssh ubuntu',
+
+	'freebsd start' => 'vboxmanage startvm FreeBSD --type headless',
+	'freebsd stop'  => 'vboxmanage controlvm FreeBSD poweroff',
+	'freebsd pause' => 'vboxmanage controlvm FreeBSD savestate',
+	'freebsd ssh'   => 'ssh freebsd',
+
+	'netbsd start' => 'vboxmanage startvm NetBSD --type headless',
+	'netbsd stop'  => 'vboxmanage controlvm NetBSD poweroff',
+	'netbsd pause' => 'vboxmanage controlvm NetBSD savestate',
+	'netbsd ssh'   => 'ssh netbsd',
 );
 
 my $cmd = join ' ', splice @ARGV, 0, 2;
@@ -14,4 +24,19 @@ my $cmd = join ' ', splice @ARGV, 0, 2;
 exec $cmds{$cmd} . " @ARGV" if $cmds{$cmd};
 print "Unknown command: '$cmd'", "\n";
 
+
+=comment
+
+How it could look like:
+
+use VirtualBox::Manage;
+
+my @vms = qw(ubuntu freebsd)
+
+foreach (@vms) {
+    my $vm = VirtualBox::Manage->start($_, { --type => headless });
+    $vm->poweroff();
+}
+
+=cut
 

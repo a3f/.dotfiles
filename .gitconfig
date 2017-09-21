@@ -21,7 +21,7 @@
 	patternType = perl
 	lineNumber = true
 [push]
-	default = simple
+	default = current
 [core]
 	editor = nvim -u ~/.vimrc.minimal
 [commit]

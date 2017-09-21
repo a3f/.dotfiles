@@ -1,0 +1,5 @@
+#!/usr/bin/env perl
+use Math::BigInt;
+
+$n = eval "@ARGV";
+print log($n)/log(2), "\n";

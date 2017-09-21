@@ -19,7 +19,7 @@ function __prompt_command() {
 export CCACHE_DIR=~/.ccache
 PATH=/usr/local/opt/ccache/libexec:$PATH
 PATH=~/bin:~/doc:~/symlinks:$PATH
-PATH=/usr/local/carlson-minot/crosscompilers/bin/:$PATH
+PATH=/usr/local/carlson-minot/crosscompilers/bin:$PATH
 PATH=/Users/a3f/arm-cs-tools/bin:$PATH
 
 export EDITOR=vi
@@ -34,6 +34,8 @@ stty -ixon > /dev/null 2>/dev/null
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	# MacPorts Installer addition on 2015-05-22_at_16:29:47: adding an appropriate PATH variable for use with MacPorts.
 	export PATH="$PATH:/usr/bin:/opt/local/bin:/opt/local/sbin"
+    export PATH="/usr/local/Cellar/qt/5.9.1/bin:$PATH"
+    export PATH="/usr/local/sbin:$PATH"
 	# Finished adapting your PATH environment variable for use with MacPorts.
 	source /opt/local/etc/bash_completion.d/*.bash
 	source /opt/local/etc/bash_completion.d/*.sh
@@ -51,7 +53,6 @@ export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 #export DYLD_INSERT_LIBRARIES='/System/Library/Frameworks/OpenGL.framework/Resources/GLEngine.bundle/GLEngine' 
  
 
-export PATH="/usr/local/Cellar/qt/5.9.1/bin/:$PATH"
 source /opt/cross/setenv.sh
 #source ~/perl5/perlbrew/etc/bashrc
 
@@ -61,3 +62,6 @@ fi
 
 eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
 complete -W "$(teamocil --list)" teamocil
+
+# added by travis gem
+[ -f /Users/a3f/.travis/travis.sh ] && source /Users/a3f/.travis/travis.sh
