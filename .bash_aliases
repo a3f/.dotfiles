@@ -43,7 +43,7 @@ alias make!='make clean; make -j4'
 alias a='./a.out'
 alias ping='ping -a'
 alias size='gsize --format=SysV'
-alias dudir="find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn"
+alias dudir="find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn | perl -MNumber::Bytes::Human=format_bytes -ne '/^(.*)\t(.*)$/; print format_bytes(1000*$ 1), qq(\t), $ 2, qq(\n)'"
 alias lsnet='sudo arp-scan --localnet --interface '
 alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn | tail -n +2 | sed -n "s/^Nmap scan report for \(.*\)\$/\1/p"'
 alias lman="man -M$HOME/linux-man"
@@ -75,7 +75,6 @@ hangman()
     W=$(shuf -n1 /usr/share/dict/words) perl -pe '$_=$s=$ENV{W}=~s/[^.$_$s]/_/gri."\n?"'
 }
 
-alias com='open cool-retro-term.app'
 alias back='cd $OLDPWD'
 alias valgrind='valgrind --dsymutil=yes'
 alias manman='cat ~/txt/sections.txt'
@@ -85,6 +84,7 @@ alias ed='ed -p:'
 alias gdb='gdb -q'
 alias bc='bc -lq'
 alias vim='nvim'
+alias mypi="smbutil lookup mypi | perl -077 -pe 's/.*mypi: (.*)/\1/gs'"
 
 export CHAR_MIN=-128
 export CHAR_MAX=127
@@ -133,21 +133,6 @@ psignal()
 {
     command psignal "${@:-$?}"
 }
-
-cd()
-{
-	builtin cd "$@" && eval "`ondir \"$OLDPWD\" \"$PWD\"`"
-}
-
-pushd()
-{
-	builtin pushd "$@" && eval "`ondir \"$OLDPWD\" \"$PWD\"`"
-}
-
-popd()
-{
-	builtin popd "$@" && eval "`ondir \"$OLDPWD\" \"$PWD\"`"
-}              
 
 settitle() {
     printf "\033k$1\033\\"

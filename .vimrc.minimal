@@ -66,7 +66,6 @@ autocmd BufNewFile,BufRead COMMIT_EDITMSG setlocal spell " alternative
 autocmd BufRead,BufNewFile *.hsc set filetype=haskell
 autocmd BufRead,BufNewFile *.h   set syntax=c
 autocmd FileType make setlocal noexpandtab
-colors solarized
 
 
 " This is taken from https://github.com/bogado/file-line/blob/master/plugin/file_line.vim

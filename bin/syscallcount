@@ -1,7 +1,3 @@
 #!/bin/sh
 
-syscallbysysc.d > /tmp/syscallcount
-#printf "s:$?\n"
-#if [[ $? -gt 127 ]]; then
-cat /tmp/syscallcount | sumon 2 "Total: "
-#fi
+dtrace -n syscall:::entry'{ @[probefunc] = count() } profile:::tick-10sec { exit(0) }' | awk '{ print; s+=$2} END { print "Total: ", s }' | tail -r | less

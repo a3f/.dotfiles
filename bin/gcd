@@ -1,0 +1,14 @@
+#!/usr/bin/env perl
+
+@ARGV == 2 or die "USAGE: $0 first_number second_number\n";
+
+print gcd(@ARGV), "\n";
+
+sub gcd {
+    my ($x, $y) = @_;
+
+    return $y if $x == 0;
+
+    return gcd($y % $x, $x);
+}
+

@@ -1,8 +1,8 @@
 #!/usr/bin/perl -CASD
-use StdinFilter;
 use Lingua::AR::Tashkeel qw(strip);
 
-filter {
+BEGIN { *arg = @ARGV ? \&CORE::shift : \&CORE::readline; }
+while (defined($_ = arg)) {
     chomp;
     print strip($_), "\n"
 }

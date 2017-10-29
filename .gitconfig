@@ -1,38 +1,40 @@
 [filter "hawser"]
-	clean = git hawser clean %f
-	smudge = git hawser smudge %f
-	required = true
+    clean = git hawser clean %f
+    smudge = git hawser smudge %f
+    required = true
+
 [user]
-	name = Ahmad Fatoum
-	email = ahmad@a3f.at
-	signingkey = C3EAC3DE9321D59B
+    name = Ahmad Fatoum
+    email = ahmad@a3f.at
+    signingkey = C3EAC3DE9321D59B
 [filter "lfs"]
-	clean = git lfs clean %f
-	smudge = git lfs smudge %f
-	required = true
+    clean = git lfs clean %f
+    smudge = git lfs smudge %f
+    required = true
 [diff]
-	tool = vimdiff
+    tool = vimdiff
 [alias]
-	d = difftool
-	s = status
+    d = difftool
+    s = status
+    git = "!exec git"
 [difftool]
-	prompt = false
+    prompt = false
 [grep]
-	patternType = perl
-	lineNumber = true
+    patternType = perl
+    lineNumber = true
 [push]
-	default = current
+    default = current
 [core]
-	editor = nvim -u ~/.vimrc.minimal
+    editor = nvim -u ~/.vimrc.minimal
 [commit]
-	verbose = true
-	gpgsign = true
+    verbose = true
+    gpgsign = true
 [github]
-	user = a3f
+    user = a3f
 [gpg]
-	program = gpg2
+    program = gpg
 [pull]
-	rebase = preserve
+    rebase = preserve
 [sendemail]
     smtpserver = mail.gandi.net 
     smtpserverport = 587

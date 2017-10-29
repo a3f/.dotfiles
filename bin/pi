@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+my $out = `smbutil lookup mypi`;
+my ($ip) = $out =~ /IP address of mypi: (.*)$/;
+exec 'ssh', 'pi@' . $ip;
