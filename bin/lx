@@ -1,8 +1,8 @@
 #!/bin/bash
 #note to self: lx -maxdepth 1 doesn't work this way
 
-if [ $# -eq 0 ]; then 
-  exec $0 '.'
+if [[ $# == 0 || "$@" =~ ^\s*- ]]; then 
+  exec $0 '.' $@
 fi
 
 find $@ -type f -perm +111 -print0 | xargs -0 file
