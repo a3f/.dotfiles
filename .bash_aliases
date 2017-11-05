@@ -42,7 +42,7 @@ alias make='make -j4'
 alias make!='make clean; make -j4'
 alias a='./a.out'
 alias ping='ping -a'
-alias size='gsize --format=SysV'
+alias size='size --format=SysV'
 alias dudir="find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn | perl -MNumber::Bytes::Human=format_bytes -ne '/^(.*)\t(.*)$/; print format_bytes(1000*$ 1), qq(\t), $ 2, qq(\n)'"
 alias lsnet='sudo arp-scan --localnet --interface '
 alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn | tail -n +2 | sed -n "s/^Nmap scan report for \(.*\)\$/\1/p"'

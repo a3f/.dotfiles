@@ -12,6 +12,8 @@ call vundle#begin()
 "call vundle#begin('~/some/path/here')
 
 " let Vundle manage Vundle, required
+Plugin 'racer-rust/vim-racer'
+Plugin 'rust-lang/rust.vim' 
 Plugin 'othree/eregex.vim'
 Plugin 'gmarik/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
@@ -22,20 +24,15 @@ Plugin 'FooSoft/vim-argwrap'
 Bundle 'christoomey/vim-sort-motion'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'scrooloose/nerdtree'
-"Plugin 'welle/targets.vim'
 Plugin 'git://git.wincent.com/command-t.git'
-"Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'Valloric/YouCompleteMe'
 Plugin 'vim-perl/vim-perl'
 Plugin 'bling/vim-airline'
-"Plugin 'gilligan/vim-lldb'
 Plugin 'kien/ctrlp.vim'
 Plugin 'a.vim'
 Plugin 'bogado/file-line'
 Plugin 'sjl/gundo.vim'
 Plugin 'xolox/vim-misc'
-"Plugin 'xolox/vim-easytags'
-"Plugin 'rosenfeld/conque-term'
 Plugin 'dag/vim2hs'
 Plugin 'shougo/vimproc.vim'
 Plugin 'eagletmt/ghcmod-vim'
@@ -47,6 +44,11 @@ Plugin 'godlygeek/tabular'
 Plugin 'gtags.vim'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'benmills/vimux'
+"Plugin 'welle/targets.vim'
+"Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+"Plugin 'gilligan/vim-lldb'
+"Plugin 'xolox/vim-easytags'
+"Plugin 'rosenfeld/conque-term'
 
 let g:VimuxRunnerIndex=3
 
@@ -241,6 +243,7 @@ let g:ycm_open_loclist_on_ycm_diags=1
 let g:ycm_extra_conf_vim_data = ['&filetype']
 let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
 let g:ycm_register_as_syntastic_checker = 0 
+let g:ycm_rust_src_path="~/dl/rust-master/src/"
 let g:ycm_show_diagnostics_ui = 1
 let g:ycm_always_populate_location_list = 1
 set include-=i
