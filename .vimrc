@@ -1,59 +1,58 @@
 syntax enable
 set background=dark
-let g:solarized_termcolors=256  
-colorscheme solarized
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+call plug#begin('~/.local/share/nvim/plugged')
 
-" let Vundle manage Vundle, required
-Plugin 'racer-rust/vim-racer'
-Plugin 'rust-lang/rust.vim' 
-Plugin 'othree/eregex.vim'
-Plugin 'gmarik/Vundle.vim'
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-repeat'
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-eunuch'
-Plugin 'FooSoft/vim-argwrap'
-Bundle 'christoomey/vim-sort-motion'
-Plugin 'scrooloose/nerdcommenter'
-Plugin 'scrooloose/nerdtree'
-Plugin 'git://git.wincent.com/command-t.git'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'vim-perl/vim-perl'
-Plugin 'bling/vim-airline'
-Plugin 'kien/ctrlp.vim'
-Plugin 'a.vim'
-Plugin 'bogado/file-line'
-Plugin 'sjl/gundo.vim'
-Plugin 'xolox/vim-misc'
-Plugin 'dag/vim2hs'
-Plugin 'shougo/vimproc.vim'
-Plugin 'eagletmt/ghcmod-vim'
-Plugin 'eagletmt/neco-ghc'
-Plugin 'scrooloose/syntastic'
-Plugin 'ajh17/Spacegray.vim'
-Plugin 'rdnetto/YCM-Generator'
-Plugin 'godlygeek/tabular'
-Plugin 'gtags.vim'
-Plugin 'christoomey/vim-tmux-navigator'
-Plugin 'benmills/vimux'
+Plug 'iCyMind/NeoSolarized'
+Plug 'racer-rust/vim-racer'
+Plug 'rust-lang/rust.vim' 
+Plug 'othree/eregex.vim'
+Plug 'gmarik/Vundle.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-eunuch'
+Plug 'FooSoft/vim-argwrap'
+Plug 'scrooloose/nerdcommenter'
+Plug 'scrooloose/nerdtree'
+Plug 'git://git.wincent.com/command-t.git'
+Plug 'Valloric/YouCompleteMe'
+Plug 'vim-perl/vim-perl'
+Plug 'bling/vim-airline'
+Plug 'kien/ctrlp.vim'
+Plug 'vim-scripts/a.vim'
+Plug 'bogado/file-line'
+Plug 'sjl/gundo.vim'
+Plug 'xolox/vim-misc'
+Plug 'dag/vim2hs'
+Plug 'shougo/vimproc.vim'
+Plug 'eagletmt/ghcmod-vim'
+Plug 'eagletmt/neco-ghc'
+Plug 'scrooloose/syntastic'
+Plug 'ajh17/Spacegray.vim'
+Plug 'rdnetto/YCM-Generator'
+Plug 'godlygeek/tabular'
+Plug 'vim-scripts/gtags.vim'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'benmills/vimux'
+"Bundle 'christoomey/vim-sort-motion'
 "Plugin 'welle/targets.vim'
 "Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 "Plugin 'gilligan/vim-lldb'
 "Plugin 'xolox/vim-easytags'
 "Plugin 'rosenfeld/conque-term'
+"
+call plug#end()            " required
+
+set termguicolors
+colorscheme NeoSolarized
 
 let g:VimuxRunnerIndex=3
 
 " All of your Plugins must be added before the following line
-call vundle#end()            " required
 filetype plugin on    " required
 filetype indent on    " required
 " To ignore plugin indent changes, instead use:
