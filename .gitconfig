@@ -17,6 +17,7 @@
     d = difftool
     s = status
     git = "!exec git"
+    pushf = push --force-with-lease
 [difftool]
     prompt = false
 [grep]
