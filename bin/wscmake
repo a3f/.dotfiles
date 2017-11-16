@@ -1,6 +1,6 @@
 #!/bin/sh
-export CC="clang -fcolor-diagnostics"
-export CXX="clang++ -fcolor-diagnostics"
+#export CC="clang -fcolor-diagnostics"
+#export CXX="clang++ -fcolor-diagnostics"
 #scan-build cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON -DENABLE_UBSAN=ON -DENABLE_EXTRA_COMPILER_WARNINGS=ON -DBUILD_wireshark_gtk=ON -DENABLE_CCACHE=ON $@
-cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON -DENABLE_UBSAN=ON -DENABLE_EXTRA_COMPILER_WARNINGS=ON -DBUILD_wireshark_gtk=ON -DENABLE_CCACHE=ON $@
+cmake -GNinja -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON -DENABLE_UBSAN=ON -DENABLE_EXTRA_COMPILER_WARNINGS=OFF -DBUILD_wireshark_gtk=ON -DENABLE_CCACHE=ON $@
 #cmake -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON -DENABLE_UBSAN=ON -DENABLE_EXTRA_COMPILER_WARNINGS=ON -DBUILD_wireshark_gtk=ON -DENABLE_CCACHE=ON $@

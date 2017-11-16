@@ -1,9 +1,0 @@
-#!/usr/bin/perl -CASD
-use Lingua::AR::Tashkeel qw(strip);
-
-BEGIN { *arg = @ARGV ? \&CORE::shift : \&CORE::readline; }
-while (defined($_ = arg)) {
-    chomp;
-    print strip($_), "\n"
-}
-

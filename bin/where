@@ -1,3 +1,4 @@
 #!/bin/sh
 
-readlink $(which $1)
+WHERE=$(which $1)
+echo $WHERE "=>" $(readlink $WHERE)

@@ -6,6 +6,7 @@ my %cmds = (
 	'ubuntu stop'  => 'vboxmanage controlvm UbuntuServer poweroff',
 	'ubuntu pause' => 'vboxmanage controlvm UbuntuServer savestate',
 	'ubuntu ssh'   => 'ssh ubuntu',
+	'ubuntu serial'   => 'nc localhost 1999',
 
 	'freebsd start' => 'vboxmanage startvm FreeBSD --type headless',
 	'freebsd stop'  => 'vboxmanage controlvm FreeBSD poweroff',
