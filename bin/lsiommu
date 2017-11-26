@@ -1,9 +1,31 @@
-#!/bin/bash
+#!/usr/bin/env perl
 
-shopt -s nullglob
+use utf8;
+binmode(STDOUT, ":utf8");
 
-for d in /sys/kernel/iommu_groups/*/devices/*; do
-    n=${d#*/iommu_groups/*}; n=${n%%/*}
-    printf 'IOMMU Group %s ' "$n"
-    sudo lspci -nns "${d##*/}"
-done;
+for (<"/sys/kernel/iommu_groups/*/devices/*">) {
+    m{^/sys/kernel/iommu_groups/(\d+)/devices/(?:0000:)?(.*)$}
+        and push @{$groups[$1]}, $2
+        or warn "Unable to parse $_\n";
+}
+die qq'Error reading /sys/kernel/iommu_groups/*/devices/*": $!\n' if $!;
+
+warn "WARNING: lsiommu must be run as super user or it will only report partial information.\n" if $<;
+print "IOMMU\n";
+for ($i = 0; $i <= $#groups; $i++) {
+    if ($i == $#groups) {
+        $isym = '└';
+        $jsym = '     ';
+    } else {
+        $isym = '├';
+        $jsym = '│   ├';
+    }
+
+    print "$isym── $i\n";
+    for ($j = 0; $j <= $#{$groups[$i]}; $j++) {
+        $jsym =~ s/^(.*).$/$1└/ if $j == $#{$groups[$i]};
+
+        print "$jsym── ";
+        system 'lspci', '-nns', $groups[$i][$j] and print "$groups[$i][$j]\n";
+    }
+}

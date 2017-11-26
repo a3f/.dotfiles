@@ -29,6 +29,9 @@ pushd! () {
 	mkdir -v -p $@;
 	pushd $@;
 }
+cpan-version () {
+    perl -M$1 -e "print $ $1::VERSION, qq(\n)";
+}
 if [[ $OSTYPE == darwin* ]]; then
 alias tac='tail -r'
 alias unq='xattr -d com.apple.quarantine'
