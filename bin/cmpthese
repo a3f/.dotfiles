@@ -2,21 +2,28 @@
 
 use strict;
 use warnings;
+use Getopt::Std;
+getopts "h:d:u:", \our %opts;
 
 use Text::Table;
 
+my $delim = $opts{d} // ',';
+my $unit = $opts{u} // 'value';
+
+my @headers = defined $opts{h} ? split $delim, $opts{h} : @ARGV;
 my @vals = @ARGV;
 
 my @rows;
 
-for my $row_val ( @vals ) {
+for (my $i = 0; $i < @vals; $i++) {
     my @row;
 
     # Column 0 = test name
-    push @row, $row_val;
+    push @row, $headers[$i];
 
     # Column 1 = performance
-    my $row_rate = $row_val;
+    my $row_rate = $vals[$i];
+    push @row, $row_rate if $opts{h};
 
     # We assume that we'll never get a 0 rate.
     my $rate = 1.0 / $row_rate;
@@ -32,9 +39,8 @@ for my $row_val ( @vals ) {
         if ( $skip_rest ) {
             $out = '';
         }
-        elsif ( $col_val eq $row_val ) {
+        elsif ( $col_num eq $i ) {
             $out = "--";
-            # $skip_rest = 1;
         }
         else {
             my $col_rate = $col_val;
@@ -45,7 +51,8 @@ for my $row_val ( @vals ) {
     push @rows, \@row;
 }
 
-my $tb = Text::Table->new(undef, @vals);
+unshift @headers, $unit if defined $opts{h};
+my $tb = Text::Table->new(undef, @headers);
 $tb->load(@rows);
 print $tb;
 
