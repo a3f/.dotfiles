@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use Env '@PATH';
+push @PATH, qw(/sbin /usr/sbin /usr/local/sbin);
 use utf8;
 binmode(STDOUT, ":utf8");
 
@@ -8,9 +10,9 @@ for (<"/sys/kernel/iommu_groups/*/devices/*">) {
         and push @{$groups[$1]}, $2
         or warn "Unable to parse $_\n";
 }
-die qq'Error reading /sys/kernel/iommu_groups/*/devices/*": $!\n' if $!;
 
-warn "WARNING: lsiommu must be run as super user or it will only report partial information.\n" if $<;
+die 'Error reading "/sys/kernel/iommu_groups/*/devices/*":', " $@\n" if $!;
+
 print "IOMMU\n";
 for ($i = 0; $i <= $#groups; $i++) {
     if ($i == $#groups) {
