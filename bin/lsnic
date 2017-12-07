@@ -1,0 +1,63 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use Env '@PATH';
+push @PATH, qw(/sbin /usr/sbin /usr/local/sbin);
+use Getopt::Std;
+getopts 'n', \our %opts;
+
+sub run { print "\$ $_[0]\n" if $opts{n}; `$_[0]` }
+
+die "ERROR: lsnic must be run as super user.\n" if $<;
+
+my ($i, @hw) = (-1);
+my @moreinfo = run 'lshw -c network -numeric';
+my ($indent) = $moreinfo[0] =~ /^(\s*)/;
+for (@moreinfo) {
+    /^$indent(\S*)$/     and $i++ or
+    /^\s*(.*?):\s*(.*)$/ and $hw[$i]{$1} = $2;
+}
+
+sub lspci_serial {
+    my $addr = shift or return;
+    $addr =~ s/^pci@//;
+    my $lspci = run "lspci -v -s $addr";
+    if (my ($serial) = ($lspci =~ /Device Serial Number (.*)/)) {
+        $serial =~ s/(.{8})-ff-ff-(.{8})/$1-$2/;
+        return $serial;
+    }
+    return;
+}
+
+sub max { my $x = shift // 0; my $y = shift // 0; $x > $y ? $x : $y }
+
+my @nics = ([qw(Bus Interface Serial Driver Description)]);
+my @offsets = map { length } @{$nics[0]};
+for (@hw) {
+    my ($i, @nic) = (0);
+    push @nic, $_->{'bus info'};
+    $offsets[$i] = max($offsets[$i], length $nic[-1]);
+    $i++;
+    push @nic, $_->{'logical name'};
+    $offsets[$i] = max($offsets[$i], length $nic[-1]);
+    $i++;
+    push @nic, $_->{serial} // lspci_serial($nic[0]);
+    $offsets[$i] = max($offsets[$i], length $nic[-1]);
+    $i++;
+    push @nic, ($_->{configuration} =~ /driver=(\S+)/);
+    $offsets[$i] = max($offsets[$i], length $nic[-1]);
+    $i++;
+    push @nic, $_->{product};
+    $offsets[$i] = max($offsets[$i], length $nic[-1]);
+    $i++;
+
+    push @nics, \@nic;
+}
+for my $nic (@nics) {
+    my $i = 0;
+    for (@offsets) {
+        printf "%-${_}s ", ($nic->[$i++] // '')
+    }
+    print "\n";
+}
