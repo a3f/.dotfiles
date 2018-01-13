@@ -1,0 +1,22 @@
+#!/usr/bin/env perl
+use JSON;
+use HTTP::Tiny;
+use Tie::File;
+
+$factor = shift or chomp($factor = <DATA>);
+
+tie my @array, 'Tie::File', $0 or die "cannot tie file\n";
+$array[-1] = $factor if $array[-1] ne $factor;
+untie @array;
+
+my $response = HTTP::Tiny->new->get("https://api.coindesk.com/v2/bpi/currentprice.json");
+die sprintf 'Error fetching ip: %s %s',
+    ($response->{status} || ''),
+    ($response->{reason} || '') unless $response->{success};
+
+my $rate = decode_json($response->{content})->{bpi}{EUR}{rate_float};
+
+printf "%.2f €/Ƀ\n", $rate * $factor;
+
+__DATA__
+1

@@ -2,22 +2,16 @@
 use WebService::NextEpisode;
 use Tie::File;
 
-my $show = join ' ', @ARGV;
-my $airdate;
-if ($show) {
-    $airdate = WebService::NextEpisode::of($show);
-} else {
-    chomp($show = <DATA>);
-    $airdate = WebService::NextEpisode::of($show);
-}
+$show = "@ARGV" or chomp($show = <DATA>);
+my $airdate = WebService::NextEpisode::of($show);
 
-if ($airdate =~ /\d/) {
-    tie @array, 'Tie::File', $0 or die "cannot tie file\n";
-    $array[-1] = $show;
-    untie @array;
-} else {exit 1;}
+exit 1 if $airdate !~ /\d/;
+
+tie @array, 'Tie::File', $0 or die "cannot tie file\n";
+$array[-1] = $show if $array[-1] ne $show;
+untie @array;
 
 print $airdate, "\n";
 
 __DATA__
-The Strain
+Game of Thrones

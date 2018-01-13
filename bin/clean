@@ -42,7 +42,7 @@ sub clean {
             next;
         }
 
-        print "$out";
+        print "$out" if defined $out;
     }
 
     return unless $depth--;

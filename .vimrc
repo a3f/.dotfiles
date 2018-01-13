@@ -132,7 +132,7 @@ imap <S-tab> <C-d>
 set listchars=trail:$
 set list
 
-set tabstop=4    "Number of spaces that a <Tab> in the file counts for"
+set tabstop=8    "Number of spaces that a <Tab> in the file counts for"
 set expandtab
 set shiftwidth=4
 set textwidth=0

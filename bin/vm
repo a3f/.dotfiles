@@ -2,11 +2,11 @@
 # vim: set ft=perl
 
 my %cmds = (
-	'ubuntu start' => 'vboxmanage startvm UbuntuServer --type headless',
-	'ubuntu stop'  => 'vboxmanage controlvm UbuntuServer poweroff',
-	'ubuntu pause' => 'vboxmanage controlvm UbuntuServer savestate',
-	'ubuntu ssh'   => 'ssh ubuntu',
-	'ubuntu serial'   => 'nc localhost 1999',
+	'ubuntu start'   => 'vboxmanage startvm UbuntuServer --type headless',
+	'ubuntu stop'    => 'vboxmanage controlvm UbuntuServer poweroff',
+	'ubuntu pause'   => 'vboxmanage controlvm UbuntuServer savestate',
+	'ubuntu ssh'     => 'ssh ubuntu',
+	'ubuntu serial'  => 'nc localhost 1999',
 
 	'freebsd start' => 'vboxmanage startvm FreeBSD --type headless',
 	'freebsd stop'  => 'vboxmanage controlvm FreeBSD poweroff',
@@ -19,11 +19,13 @@ my %cmds = (
 	'netbsd ssh'   => 'ssh netbsd',
 );
 
+$cmds{'ubuntu restart'} = join ' && ', @cmds{'ubuntu stop', 'ubuntu start'};
+
 my $cmd = join ' ', splice @ARGV, 0, 2;
 
+die "Unknown command: '$cmd'", "\n" unless $cmds{$cmd};
 
-exec $cmds{$cmd} . " @ARGV" if $cmds{$cmd};
-print "Unknown command: '$cmd'", "\n";
+exit system ($cmds{$cmd} . " @ARGV");
 
 
 =comment

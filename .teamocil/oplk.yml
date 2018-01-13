@@ -1,0 +1,15 @@
+windows:
+    - name: oplk
+      root: ~/dl/openPOWERLINK_V2
+      layout: 5e16,208x61,0,0{104x61,0,0,0,103x61,105,0[103x32,105,0,3,103x28,105,33,4]}
+      panes:
+        - commands:
+            - cd stack/src/kernel/edrv
+            - vim edrv-smsc95xx.c edrv-8139.c edrv-8254x.c
+        - commands:
+            - settitle oplk
+            - cd drivers/linux/drv_kernelmod_edrv/
+            - vi CMakeLists.txt
+        - commands:
+            - cd drivers/linux/drv_kernelmod_edrv/build/
+            - ssh linux

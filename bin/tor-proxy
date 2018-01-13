@@ -10,8 +10,8 @@ FLAGS=
 
 networksetup -setsocksfirewallproxy $INTERFACE 127.0.0.1 9050 off
 networksetup -setsocksfirewallproxystate $INTERFACE on
-finish {
-networksetup -setsocksfirewallproxystate $INTERFACE off
+finish() {
+	networksetup -setsocksfirewallproxystate $INTERFACE off
 }
 trap finish EXIT
 if [ $# -ne 0 ]; then 
