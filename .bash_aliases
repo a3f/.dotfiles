@@ -86,7 +86,6 @@ alias ...='cd ../..'
 alias ed='ed -p:'
 alias gdb='gdb -q'
 alias bc='bc -lq'
-alias vim='nvim'
 alias mypi="smbutil lookup mypi | perl -077 -pe 's/.*mypi: (.*)/\1/gs'"
 
 export CHAR_MIN=-128

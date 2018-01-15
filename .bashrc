@@ -53,15 +53,11 @@ export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig"
 #export DYLD_INSERT_LIBRARIES='/System/Library/Frameworks/OpenGL.framework/Resources/GLEngine.bundle/GLEngine' 
  
 
-source /opt/cross/setenv.sh
-#source ~/perl5/perlbrew/etc/bashrc
-
-if [ -f ~/.bash_aliases ]; then
-. ~/.bash_aliases
-fi
-
+[ -f /opt/cross/setenv.sh ] && source /opt/cross/setenv.sh
+# [-f ~/perl5/perlbrew/etc/bashrc] && source ~/perl5/perlbrew/etc/bashrc
+[ -f $HOME/.bash_aliases ] && source $HOME/.bash_aliases
 eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
-complete -W "$(teamocil --list)" teamocil
+command -v teamocil &>/dev/null && complete -W "$(teamocil --list)" teamocil
 
 # added by travis gem
 [ -f $HOME/.travis/travis.sh ] && source $HOME/.travis/travis.sh
