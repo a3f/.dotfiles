@@ -1,0 +1,23 @@
+#!/usr/bin/env perl
+## e.g. offset2line do_init_module+0x1d3/0x609 | less
+
+use File::Basename;
+use Getopt::Std;
+
+my $name = basename($0);
+my $asm = $name eq 'offset2asm';
+@ARGV == 1 or die "USAGE: $name [-l /path/to/vmlinux] func+0x0FFSET/0xLENGTH\n";
+my ($func, $off, $length) = ($ARGV[0] =~ m{(\w+)[+](0x[[:xdigit:]]+)(?:/(0x[[:xdigit:]]+))?});
+getopt 'l', \my %opts;
+my $gdb = $ENV{GDB} // 'gdb';
+chomp(my $uname = `uname -r`);
+$opts{l} = $opts{l} // "/usr/lib/debug/lib/modules/$uname/vmlinux";
+
+exec $gdb, $opts{l}, '-batch', '-ex', "info line *$func+$off" unless $asm;
+
+my $marked;
+for (`$gdb $opts{l} -batch -ex 'disassemble $func'`) {
+    s/<(\w*)[+](\d+)>/sprintf "<$1+0x%x>", $2/eg;
+    $marked ||= s/   (0x[[:xdigit:]]+ <[+]$off>)/==>$1/;
+    print;
+}
