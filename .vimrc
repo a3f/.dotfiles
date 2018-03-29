@@ -18,6 +18,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'rust-lang/rust.vim', { 'for' : 'rust' }
 Plug 'othree/eregex.vim'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-sleuth'
 Plug 'lervag/vimtex' , { 'for' : 'tex' }
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
@@ -35,6 +36,7 @@ Plug 'kien/ctrlp.vim'
 Plug 'bogado/file-line'
 Plug 'sjl/gundo.vim'
 Plug 'xolox/vim-misc'
+Plug 'bronson/vim-trailing-whitespace'
 Plug 'dag/vim2hs', { 'for' : 'haskell' }
 Plug 'eagletmt/ghcmod-vim', { 'for' : 'haskell' }
 Plug 'eagletmt/neco-ghc', { 'for' : 'haskell' }
@@ -57,6 +59,10 @@ call plug#end()            " required
 
 set termguicolors
 colorscheme NeoSolarized
+if &t_Co == 8 && $TERM !~# '^linux\|^Eterm'
+  set t_Co=16
+endif
+
 
 let g:VimuxRunnerIndex=3
 
@@ -127,17 +133,25 @@ vmap <tab> >gv
 vmap <s-tab> <gv
 imap <S-tab> <C-d>
 
-" hidden characters
-set listchars=trail:$
-set list
-
 set tabstop=8    "Number of spaces that a <Tab> in the file counts for"
 set expandtab
 set shiftwidth=4
-set textwidth=0
+set textwidth=0	"
 set wrapmargin=0
 set formatoptions-=t
 set autoindent
+set backspace=indent,eol,start
+" this if for looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong lines
+set showbreak=↪\ 
+set scrolloff=1
+set sidescrolloff=5
+if v:version > 703 || v:version == 703 && has("patch541")
+  set formatoptions+=j " Delete comment character when joining commented lines
+endif
+
+
+
+
 vmap <C-c> <plug>NERDCommenterNested
 nmap <C-c> <plug>NERDCommenterInvert
 "nnoremap <silent> = :ArgWrap<CR>
@@ -174,6 +188,7 @@ endif
 "nnoremap <down> <C-d>
 "nnoremap <up> <C-u>
 nnoremap <leader>u :GundoToggle<CR>
+nnoremap <leader>z :NERDTreeToggle<CR>
 "support for Inline::C code highlighting
 "eventually __END__ highlighting must be removed
 autocmd BufRead,BufNewFile *.pl call TextEnableCodeSnip('c', '__C__', '__DATA__', 'SpecialComment')
@@ -192,7 +207,7 @@ vnoremap k gk
 " Jump to line 42 with 42G
 nnoremap <CR> G
 " ctrl+j breaks line
-nnoremap <c-j> a<CR><Esc>k$ 
+nnoremap <c-j> a<CR><Esc>k$
 
 """""""""""""""""
 """" Editing """"
@@ -241,10 +256,10 @@ let g:syntastic_masm_nasm_args = ["-f macho64"]
 let g:syntastic_asm_nasm_args = ["-f macho64"]
 let g:syntastic_vhdl_ghdl_args = ["--workdir=work"]
 let g:ycm_autoclose_preview_window_after_insertion=1
-let g:ycm_open_loclist_on_ycm_diags=1 
+let g:ycm_open_loclist_on_ycm_diags=1
 let g:ycm_extra_conf_vim_data = ['&filetype']
 let g:ycm_global_ycm_extra_conf = "~/.vim/.ycm_extra_conf.py"
-let g:ycm_register_as_syntastic_checker = 0 
+let g:ycm_register_as_syntastic_checker = 0
 let g:ycm_rust_src_path="~/dl/rust-master/src/"
 let g:ycm_show_diagnostics_ui = 1
 let g:ycm_always_populate_location_list = 1
@@ -286,7 +301,6 @@ fun! s:runtest(...)
     else
         VimuxRunCommand a:1
     endif
-    
 endfun
 
 """""""""""""""""""""""
