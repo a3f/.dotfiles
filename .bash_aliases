@@ -32,6 +32,13 @@ pushd! () {
 cpan-version () {
     perl -M$1 -e "print $ $1::VERSION, qq(\n)";
 }
+ackvi () {
+    ack -l $@ | xargs vi "+/$1"
+}
+ackvim () {
+    ack -l $@ | xargs vim "+/$1"
+}
+
 if [[ $OSTYPE == darwin* ]]; then
 alias tac='tail -r'
 alias unq='xattr -d com.apple.quarantine'
@@ -103,8 +110,8 @@ export INT_MAX=2147483647
 export UINT_MIN=0
 export UINT_MAX=4294967295
 
-export LONG_MIN=9223372036854775807
-export LONG_MAX=-9223372036854775808
+export LONG_MIN=-9223372036854775808
+export LONG_MAX=9223372036854775807
 export ULONG_MIN=0
 export ULONG_MAX=18446744073709551615
 
@@ -114,6 +121,7 @@ alias 2d='2base -d 10'
 alias 2h='2base -d 16'
 alias 2x='2base -d 16'
 alias 2a='2u'
+
 # paged ack
 alias pgack='ack --pager="less -R"'
 alias dziltest='dzil run --nobuild prove-5.24 -lv'

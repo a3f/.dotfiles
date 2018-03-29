@@ -5,7 +5,7 @@ windows:
       panes:
         - commands:
             - cd stack/src/kernel/edrv
-            - vim edrv-smsc95xx.c edrv-8139.c edrv-8254x.c
+            - vim edrv-bridge_linux.c edrv-kernelrawsock_linux.c
         - commands:
             - settitle oplk
             - cd drivers/linux/drv_kernelmod_edrv/

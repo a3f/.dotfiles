@@ -14,9 +14,11 @@ die sprintf 'Error fetching ip: %s %s',
     ($response->{status} || ''),
     ($response->{reason} || '') unless $response->{success};
 
-my $rate = decode_json($response->{content})->{bpi}{EUR}{rate_float};
+my $json = decode_json($response->{content});
+my $rate = $json->{bpi}{EUR}{rate_float};
+my $time = $json->{time}{updated};
 
-printf "%.2f €/Ƀ\n", $rate * $factor;
+printf "%.2f €/Ƀ (%s)\n", $rate * $factor, $time;
 
 __DATA__
 1

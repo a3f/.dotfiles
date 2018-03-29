@@ -1,0 +1,8 @@
+#!/usr/bin/env perl6
+
+sub MAIN(Int $int) {
+    exit 2 unless $int.is-prime;
+
+    say 'Prime!';
+}
+

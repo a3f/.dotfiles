@@ -2,6 +2,6 @@
 
 $_ = qx/pbpaste/;
 s/%([[:xdigit:]]{2})/chr(hex($1))/ge;
-s[^.*\?.*=][];
-qx"echo $_ | pbcopy";
-
+#s[^.*\?.*=][];
+print $_, "\n";
+qx"echo '$_' | pbcopy";

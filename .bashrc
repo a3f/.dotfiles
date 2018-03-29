@@ -19,6 +19,7 @@ function __prompt_command() {
 export CCACHE_DIR=~/.ccache
 PATH=/usr/local/opt/ccache/libexec:$PATH
 PATH=~/bin:~/doc:~/symlinks:$PATH
+PATH=~/.local/bin:$PATH
 
 export EDITOR=vi
 #set -o vi

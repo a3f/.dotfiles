@@ -1,4 +1,3 @@
 #!/bin/sh
 perl -MExtUtils::Installed -e 'my $inst = ExtUtils::Installed->new();
 + print $_, $/ for $inst->modules'
-

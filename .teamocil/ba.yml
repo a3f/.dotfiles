@@ -1,11 +1,12 @@
 windows:
-    - name: std
-      root: ~
+    - name: ba
+      root: ~/thesis
       layout: 5e16,208x61,0,0{104x61,0,0,0,103x61,105,0[103x32,105,0,3,103x28,105,33,4]}
       panes:
         - commands:
-            - echo code
+            - cd latex && vim ../TOC diploma_thesis.tex
         - commands:
-            - settitle std
+            - settitle ba
+            - vim TOC
         - commands:
-            - echo git
+            - make

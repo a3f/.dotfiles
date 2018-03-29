@@ -3,16 +3,22 @@ set background=dark
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
+" Load vim-plug
+if empty(glob("~/.vim/autoload/plug.vim"))
+    execute '!curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim'
+endif
+
+" set the runtime path to include Plug and initialize
 call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'iCyMind/NeoSolarized'
-Plug 'racer-rust/vim-racer'
-Plug 'rust-lang/rust.vim' 
+Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+Plug 'racer-rust/vim-racer', { 'for' : 'rust' }
+Plug 'airblade/vim-gitgutter'
+Plug 'rust-lang/rust.vim', { 'for' : 'rust' }
 Plug 'othree/eregex.vim'
-Plug 'gmarik/Vundle.vim'
 Plug 'tpope/vim-fugitive'
-Plug 'lervag/vimtex'
+Plug 'lervag/vimtex' , { 'for' : 'tex' }
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-eunuch'
@@ -20,21 +26,22 @@ Plug 'FooSoft/vim-argwrap'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'git://git.wincent.com/command-t.git'
-Plug 'Valloric/YouCompleteMe'
-Plug 'vim-perl/vim-perl'
+Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'c++', 'rust', 'objc', 'objc++'] }
+Plug 'vim-perl/vim-perl', { 'for' : 'perl' }
+Plug 'vim-perl/vim-perl6', { 'for' : 'perl6' }
 Plug 'bling/vim-airline'
 Plug 'kien/ctrlp.vim'
 "Plug 'vim-scripts/a.vim'
 Plug 'bogado/file-line'
 Plug 'sjl/gundo.vim'
 Plug 'xolox/vim-misc'
-Plug 'dag/vim2hs'
-Plug 'shougo/vimproc.vim'
-Plug 'eagletmt/ghcmod-vim'
-Plug 'eagletmt/neco-ghc'
+Plug 'dag/vim2hs', { 'for' : 'haskell' }
+Plug 'eagletmt/ghcmod-vim', { 'for' : 'haskell' }
+Plug 'eagletmt/neco-ghc', { 'for' : 'haskell' }
 Plug 'scrooloose/syntastic'
+Plug 'nxadm/syntastic-perl6', { 'for' : 'perl6' }
 Plug 'ajh17/Spacegray.vim'
-Plug 'rdnetto/YCM-Generator'
+Plug 'rdnetto/YCM-Generator', { 'for' : 'cmake' }
 Plug 'godlygeek/tabular'
 Plug 'vim-scripts/gtags.vim'
 Plug 'christoomey/vim-tmux-navigator'
@@ -58,15 +65,7 @@ filetype plugin on    " required
 filetype indent on    " required
 " To ignore plugin indent changes, instead use:
 "filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+
 """""""""""""""""
 """" General """"
 """""""""""""""""
@@ -201,7 +200,7 @@ nnoremap <c-j> a<CR><Esc>k$
 "
 "replace FALSE or current word with yanked text
 vnoremap S "0P
-nnoremap S "0P
+nnoremap S viw"0P
 "nnoremap <C-space> A<c-x><c-l><Esc>
 "nnoremap <C-@> A<c-x><c-l><Esc>
 nnoremap <space> i<space><Esc>
@@ -231,6 +230,9 @@ let g:python_host_skip_check = 1
 let g:python3_host_skip_check = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_enable_perl_checker = 1
+let g:syntastic_perl6_checkers = ['jsonerror']
+let g:syntastic_enable_perl6_jsonerror_checker = 1
+
 let g:syntastic_perl_checkers = ["perl"]
 let g:syntastic_masm_checkers = ["nasm"]
 let g:syntastic_nasm_nasm_args = ["-f macho64"]
@@ -272,7 +274,10 @@ nnoremap <right> :lnext<CR>
 
 command! -nargs=0 Spellcheck setlocal spell spelllang=en_us
 
-ca t Test
+if !exists(":DiffOrig")
+    command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+          \ | wincmd p | diffthis
+endif
 
 command! -nargs=? Test call s:runtest(<f-args>)
 fun! s:runtest(...)
