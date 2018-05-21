@@ -11,6 +11,7 @@ endif
 " set the runtime path to include Plug and initialize
 call plug#begin('~/.local/share/nvim/plugged')
 
+Plug 'vivien/vim-linux-coding-style'
 Plug 'iCyMind/NeoSolarized'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'racer-rust/vim-racer', { 'for' : 'rust' }
@@ -19,6 +20,7 @@ Plug 'rust-lang/rust.vim', { 'for' : 'rust' }
 Plug 'othree/eregex.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sleuth'
+Plug 'tpope/vim-characterize'
 Plug 'lervag/vimtex' , { 'for' : 'tex' }
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
@@ -26,7 +28,6 @@ Plug 'tpope/vim-eunuch'
 Plug 'FooSoft/vim-argwrap'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
-Plug 'git://git.wincent.com/command-t.git'
 Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'c++', 'rust', 'objc', 'objc++'] }
 Plug 'vim-perl/vim-perl', { 'for' : 'perl' }
 Plug 'vim-perl/vim-perl6', { 'for' : 'perl6' }
@@ -241,6 +242,7 @@ nnoremap <leader>P "aP
 """""""""""""""""""""""
 """" Code specific """"
 """""""""""""""""""""""
+let g:linuxsty_patterns = [ "/usr/src/", "/linux", "~/linux", "~/prjs/uman" ]
 let g:python_host_skip_check = 1
 let g:python3_host_skip_check = 1
 let g:syntastic_check_on_open = 1
