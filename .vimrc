@@ -12,6 +12,8 @@ endif
 call plug#begin('~/.local/share/nvim/plugged')
 
 Plug 'vivien/vim-linux-coding-style'
+Plug 'yssl/QFEnter'
+Plug 'zirrostig/vim-schlepp'
 Plug 'iCyMind/NeoSolarized'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'racer-rust/vim-racer', { 'for' : 'rust' }
@@ -82,6 +84,16 @@ let mapleader=' '
 vnoremap <leader>e "ac<c-r>=<c-r>a<CR><Esc>T<space>
 nnoremap <leader>e "ac/[;,:=]<cr><c-r>=<c-r>a<CR><Esc>T<space>:noh<cr>
 nnoremap <leader><backspace> :w<CR>
+
+vmap  <unique> <LEFT> <Plug>SchleppLeft
+vmap  <unique> <RIGHT> <Plug>SchleppRight
+vmap  <unique> <DOWN> <Plug>SchleppDown
+vmap  <unique> <UP> <Plug>SchleppUp
+vmap  <unique> D <Plug>SchleppDup
+
+" Remove any introduced trailing whitespace after moving...
+let g:Schlepp#trimWS = 1
+
 
 nore ; :
 nore : ;
@@ -183,7 +195,7 @@ nore 0 ^
 cnore <c-b> <c-a>
 cnore <c-a> <c-b>
 if has ('nvim')
-tnoremap <Esc> <C-\><C-n>
+tnoremap <Esc> <C-Bslash><C-n>
 endif
 
 "nnoremap <down> <C-d>
@@ -271,7 +283,7 @@ set include-=i
 nnoremap <leader>s :setlocal spell spelllang=en_us<CR>
 " jump to decl/def
 nore <C-]> :Gtags<CR><CR>
-nore <C-\> :Gtags -r<CR><CR>
+nore <C-Bslash> :Gtags -r<CR><CR>
 map + :cn<CR>
 map - :cp<CR>
 nnoremap <leader>g :YcmCompleter GoTo<CR>
