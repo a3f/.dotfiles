@@ -1,2 +1,2 @@
 #!/bin/sh
-exec nvim -u ~/.vimrc.minimal "$@"
+command -v vim && exec vim -u ~/.vimrc.minimal "$@" || exec /usr/bin/vi $@

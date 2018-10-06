@@ -2,7 +2,7 @@
 
 if [ "$#" -ne 1 -a "$#" -ne 2 ]; then
     echo 'error: branch name must be specified'
-    echo 'usage: git rebranch <branch> [<branchpoint-commit>]'
+    echo 'usage: git rebranch <branch> [<branchesparent-commit>]'
 fi
 
 echo git branch "$1" || exit 1;

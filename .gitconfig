@@ -20,6 +20,8 @@
     pushf = push --force-with-lease
 [difftool]
     prompt = false
+[format]
+    pretty=fuller
 [grep]
     patternType = perl
     lineNumber = true

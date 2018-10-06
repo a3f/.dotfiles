@@ -13,9 +13,13 @@ color() {
 W='-Wall -Wextra -pedantic'
 lallegro='pkg-config --cflags --libs allegro-5 allegro_acodec-5 allegro_audio-5 allegro_font-5 allegro_image-5 allegro_main-5 allegro_dialog-5 allegro_primitives-5 allegro_ttf-5'
 
-alias grep='grep --color=auto'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias grep='grep --color=auto'
+    alias egrep='egrep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias diff='diff --color=auto'
+fi
 
 
 cal () {
@@ -95,32 +99,13 @@ alias gdb='gdb -q'
 alias bc='bc -lq'
 alias mypi="smbutil lookup mypi | perl -077 -pe 's/.*mypi: (.*)/\1/gs'"
 
-export CHAR_MIN=-128
-export CHAR_MAX=127
-export UCHAR_MIN=0
-export UCHAR_MAX=255
-
-export SHRT_MIN=-32768
-export SHRT_MAX=32767
-export USHRT_MIN=0
-export USHRT_MAX=65535
-
-export INT_MIN=-2147483648
-export INT_MAX=2147483647
-export UINT_MIN=0
-export UINT_MAX=4294967295
-
-export LONG_MIN=-9223372036854775808
-export LONG_MAX=9223372036854775807
-export ULONG_MIN=0
-export ULONG_MAX=18446744073709551615
-
 alias 2b='2base -d 2'
 alias 2o='2base -d 8'
 alias 2d='2base -d 10'
 alias 2h='2base -d 16'
 alias 2x='2base -d 16'
 alias 2a='2u'
+alias c='microcom -p'
 
 # paged ack
 alias pgack='ack --pager="less -R"'
@@ -133,11 +118,11 @@ xdd()
         -t -m "$2" -c . -n "$1"
 }
 
-alias .='source'
-source()
-{
-    builtin source "${@:-$HOME/.bashrc}"
-}
+#alias .='source'
+#source()
+#{
+#    builtin source "${@:-$HOME/.bashrc}"
+#}
 
 psignal()
 {
@@ -150,3 +135,4 @@ settitle() {
 
 alias c4ev3="github-dl c4ev3"
 
+[ -e ~/.bash_aliases.after ] && source ~/.bash_aliases.after

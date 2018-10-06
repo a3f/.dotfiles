@@ -51,6 +51,12 @@ Plug 'godlygeek/tabular'
 Plug 'vim-scripts/gtags.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'
+
+autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
+
+if filereadable(expand("~/.vimrc.plug.after"))
+  source ~/.vimrc.plug.after
+endif
 "Bundle 'christoomey/vim-sort-motion'
 "Plugin 'welle/targets.vim'
 "Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -85,15 +91,11 @@ vnoremap <leader>e "ac<c-r>=<c-r>a<CR><Esc>T<space>
 nnoremap <leader>e "ac/[;,:=]<cr><c-r>=<c-r>a<CR><Esc>T<space>:noh<cr>
 nnoremap <leader><backspace> :w<CR>
 
-vmap  <unique> <LEFT> <Plug>SchleppLeft
-vmap  <unique> <RIGHT> <Plug>SchleppRight
-vmap  <unique> <DOWN> <Plug>SchleppDown
-vmap  <unique> <UP> <Plug>SchleppUp
-vmap  <unique> D <Plug>SchleppDup
-
-" Remove any introduced trailing whitespace after moving...
-let g:Schlepp#trimWS = 1
-
+vmap  <LEFT> <Plug>SchleppLeft
+vmap  <RIGHT> <Plug>SchleppRight
+vmap  <DOWN> <Plug>SchleppDown
+vmap  <UP> <Plug>SchleppUp
+vmap  D <Plug>SchleppDup
 
 nore ; :
 nore : ;
@@ -128,6 +130,8 @@ let g:airline_symbols.linenr = 'Ξ'
 "let g:airline#extensions#loclist#enabled = 1
 autocmd VimEnter * call AirlineAddFunc()
 
+nnoremap <leader>bg :let &background = ( &background == "dark"? "light" : "dark" )<CR>
+
 """""""""""""""""""""""""
 """" Buffer handling """"
 """""""""""""""""""""""""
@@ -145,6 +149,9 @@ nnoremap <silent> <leader><tab> :b#<cr>
 vmap <tab> >gv
 vmap <s-tab> <gv
 imap <S-tab> <C-d>
+
+" Remove any introduced trailing whitespace after moving...
+let g:Schlepp#trimWS = 1
 
 set tabstop=8    "Number of spaces that a <Tab> in the file counts for"
 set expandtab
@@ -201,6 +208,9 @@ endif
 "nnoremap <down> <C-d>
 "nnoremap <up> <C-u>
 nnoremap <leader>u :GundoToggle<CR>
+if has('python3')
+    let g:gundo_prefer_python3 = 1          " anything else breaks on Ubuntu 16.04+
+endif
 nnoremap <leader>z :NERDTreeToggle<CR>
 "support for Inline::C code highlighting
 "eventually __END__ highlighting must be removed
@@ -236,7 +246,7 @@ nnoremap <space> i<space><Esc>
 """""""""""""""""""
 """" Clipboard """"
 """""""""""""""""""
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 nnoremap x "_x
 nnoremap X "_X
@@ -254,7 +264,7 @@ nnoremap <leader>P "aP
 """""""""""""""""""""""
 """" Code specific """"
 """""""""""""""""""""""
-let g:linuxsty_patterns = [ "/usr/src/", "/linux", "~/linux", "~/prjs/uman" ]
+"let g:linuxsty_patterns = [ "/usr/src/", "/linux", "~/linux", "~/prjs/uman", "$BACKUP/linux", "$BACKUP/barebox" ]
 let g:python_host_skip_check = 1
 let g:python3_host_skip_check = 1
 let g:syntastic_check_on_open = 1
@@ -283,7 +293,7 @@ set include-=i
 nnoremap <leader>s :setlocal spell spelllang=en_us<CR>
 " jump to decl/def
 nore <C-]> :Gtags<CR><CR>
-nore <C-Bslash> :Gtags -r<CR><CR>
+nore <C-Bslash> :GtagsCursor<CR>
 map + :cn<CR>
 map - :cp<CR>
 nnoremap <leader>g :YcmCompleter GoTo<CR>
@@ -322,6 +332,7 @@ endfun
 """""""""""""""""""""""
 autocmd BufRead,BufNewFile *.hsc set filetype=haskell
 autocmd BufRead,BufNewFile *.h   set syntax=c
+autocmd BufRead,BufNewFile *.bashrc   set syntax=bash
 autocmd VimLeave *.* :mksession! ~/.vimsession<CR>
 "map ZZ :mksession! ~/.vimsession<CR>
 "source ~/.vimsession 3
@@ -391,3 +402,7 @@ fun! ShowFuncName()
   call search("\\%" . lnum . "l" . "\\%" . col . "c")
   return text
 endfun
+
+if filereadable(expand("~/.vimrc.after"))
+  source ~/.vimrc.after
+endif

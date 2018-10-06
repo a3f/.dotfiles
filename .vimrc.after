@@ -1,8 +1,0 @@
-syntax enable
-set background=dark
-colorscheme solarized
-
-set formatoptions+=r
-set textwidth=0 wrapmargin=0
-set wrap linebreak nolist
-

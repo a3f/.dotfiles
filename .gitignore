@@ -1,6 +1,7 @@
 /*
 /*/
 !/bin/
+!/.bashrc.d/
 !/.teamocil/
 *.sw*
 GTAGS
