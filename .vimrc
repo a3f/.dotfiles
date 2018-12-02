@@ -11,18 +11,20 @@ endif
 " set the runtime path to include Plug and initialize
 call plug#begin('~/.local/share/nvim/plugged')
 
-Plug 'vivien/vim-linux-coding-style'
+Plug 'vivien/vim-linux-coding-style', { 'for' : 'c' }
 Plug 'yssl/QFEnter'
 Plug 'zirrostig/vim-schlepp'
 Plug 'iCyMind/NeoSolarized'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 Plug 'racer-rust/vim-racer', { 'for' : 'rust' }
 Plug 'airblade/vim-gitgutter'
+Plug 'majutsushi/tagbar'
 Plug 'rust-lang/rust.vim', { 'for' : 'rust' }
 Plug 'othree/eregex.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sleuth'
 Plug 'tpope/vim-characterize'
+Plug 'mileszs/ack.vim'
 Plug 'lervag/vimtex' , { 'for' : 'tex' }
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
@@ -30,11 +32,15 @@ Plug 'tpope/vim-eunuch'
 Plug 'FooSoft/vim-argwrap'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
+Plug 'ryanoasis/vim-devicons'
 Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'c++', 'rust', 'objc', 'objc++'] }
 Plug 'vim-perl/vim-perl', { 'for' : 'perl' }
 Plug 'vim-perl/vim-perl6', { 'for' : 'perl6' }
 Plug 'bling/vim-airline'
 Plug 'kien/ctrlp.vim'
+Plug 'chrisbra/vim-kconfig'
+Plug 'chrisbra/Recover.vim'
+Plug 'mhinz/vim-startify'
 "Plug 'vim-scripts/a.vim'
 Plug 'bogado/file-line'
 Plug 'sjl/gundo.vim'
@@ -87,15 +93,15 @@ filetype indent on    " required
 
 let mapleader=' '
 " evaluate selection or till semi-colon
-vnoremap <leader>e "ac<c-r>=<c-r>a<CR><Esc>T<space>
+xnoremap <leader>e "ac<c-r>=<c-r>a<CR><Esc>T<space>
 nnoremap <leader>e "ac/[;,:=]<cr><c-r>=<c-r>a<CR><Esc>T<space>:noh<cr>
 nnoremap <leader><backspace> :w<CR>
 
-vmap  <LEFT> <Plug>SchleppLeft
-vmap  <RIGHT> <Plug>SchleppRight
-vmap  <DOWN> <Plug>SchleppDown
-vmap  <UP> <Plug>SchleppUp
-vmap  D <Plug>SchleppDup
+xmap  <LEFT> <Plug>SchleppLeft
+xmap  <RIGHT> <Plug>SchleppRight
+xmap  <DOWN> <Plug>SchleppDown
+xmap  <UP> <Plug>SchleppUp
+xmap  D <Plug>SchleppDup
 
 nore ; :
 nore : ;
@@ -109,6 +115,7 @@ set fileencoding=utf-8
 set lazyredraw
 set nrformats+=alpha
 set number
+set noshowmode
 set showcmd
 set wildmenu
 set wildmode=list:longest,full
@@ -132,6 +139,17 @@ autocmd VimEnter * call AirlineAddFunc()
 
 nnoremap <leader>bg :let &background = ( &background == "dark"? "light" : "dark" )<CR>
 
+" close vim if only a NERDTree window is left
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+noremap <C-n> :NERDTreeToggle<CR>
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+let g:ctrlp_extensions = ['tag']
+
+autocmd BufWritePost * GitGutter
+let g:xray_enable = 1
+
+
 """""""""""""""""""""""""
 """" Buffer handling """"
 """""""""""""""""""""""""
@@ -146,8 +164,8 @@ nnoremap <silent> <leader><tab> :b#<cr>
 """" Code formatting """"
 """""""""""""""""""""""""
 "make tab in v mode indent code
-vmap <tab> >gv
-vmap <s-tab> <gv
+xmap <tab> >gv
+xmap <s-tab> <gv
 imap <S-tab> <C-d>
 
 " Remove any introduced trailing whitespace after moving...
@@ -172,7 +190,7 @@ endif
 
 
 
-vmap <C-c> <plug>NERDCommenterNested
+xmap <C-c> <plug>NERDCommenterNested
 nmap <C-c> <plug>NERDCommenterInvert
 "nnoremap <silent> = :ArgWrap<CR>
 
@@ -186,8 +204,8 @@ set incsearch
 nnoremap <silent> <leader>n :noh<CR>
 " left-hand line-wise navigation
 nnoremap <C-q> <C-y>
-nnoremap <up> <C-y>
-nnoremap <down> <C-e>
+nnoremap <up> g;
+nnoremap <down> g,
 " line-wise navigation for when <c-q> and <c-e> are remapped to <m-f> and <m-b>
 nnoremap <m-b> <c-y>
 nnoremap <m-f> <c-e>
@@ -202,7 +220,7 @@ nore 0 ^
 cnore <c-b> <c-a>
 cnore <c-a> <c-b>
 if has ('nvim')
-tnoremap <Esc> <C-Bslash><C-n>
+  tnoremap <Esc> <C-Bslash><C-n>
 endif
 
 "nnoremap <down> <C-d>
@@ -225,8 +243,8 @@ set wrap linebreak nolist
 nnoremap j gj
 nnoremap k gk
 
-vnoremap j gj
-vnoremap k gk
+xnoremap j gj
+xnoremap k gk
 " Jump to line 42 with 42G
 nnoremap <CR> G
 " ctrl+j breaks line
@@ -237,7 +255,12 @@ nnoremap <c-j> a<CR><Esc>k$
 """""""""""""""""
 "
 "replace FALSE or current word with yanked text
-vnoremap S "0P
+let g:surround_no_mappings=1
+nmap ds  <Plug>Dsurround
+nmap cs  <Plug>Csurround
+nmap cS  <Plug>CSurround
+
+xnoremap S "0P
 nnoremap S viw"0P
 "nnoremap <C-space> A<c-x><c-l><Esc>
 "nnoremap <C-@> A<c-x><c-l><Esc>
@@ -250,8 +273,8 @@ set clipboard=unnamedplus
 
 nnoremap x "_x
 nnoremap X "_X
-vnoremap x "_x
-vnoremap X "_X
+xnoremap x "_x
+xnoremap X "_X
 " accumulate yanks instead of overwriting
 nnoremap <leader>y "Ayy
 nnoremap <leader>d "Add
@@ -294,8 +317,8 @@ nnoremap <leader>s :setlocal spell spelllang=en_us<CR>
 " jump to decl/def
 nore <C-]> :Gtags<CR><CR>
 nore <C-Bslash> :GtagsCursor<CR>
-map + :cn<CR>
-map - :cp<CR>
+map <leader>= :cn<CR> "+
+map <leader>- :cp<CR>
 nnoremap <leader>g :YcmCompleter GoTo<CR>
 nnoremap <leader>G :YcmCompleter GoToDefinitionElseDeclaration<CR>
 nnoremap <leader>l :YcmForceCompileAndDiagnostics<CR><CR>
