@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+
+if [ "$#" -ne 1 ]; then
+    echo 'error: only file name must be specified'
+    echo 'usage: git fixup <file>'
+fi
+
+hash=$(git log -n 1 --pretty=format:%H -- "$1")
+git commit --no-verify --fixup=$hash $1
+git rebase --interactive --autosquash --autostash \
+                         --preserve-merges $hash~

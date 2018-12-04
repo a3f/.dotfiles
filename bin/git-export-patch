@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use autodie;
+use File::Basename qw(fileparse);
+
+if (@ARGV < 2) {
+    warn "error: destination not specified\n";
+    die  "usage: git export-patch <format-patch args> destination\n";
+}
+
+my ($series, $destdir, $suffix) = ('', pop, '');
+if (-f $destdir) {
+    ($series, $destdir, $suffix) = fileparse($destdir, qr/\.[^.]*/);
+}
+
+if ($series ne "series") {
+    ($series, $suffix) = ("series", do {
+            -f "$destdir/series.inc" ?  ".inc" :
+            -f "$destdir/series"    ?   ""     :
+                                        ""     ;
+    });
+}
+
+my @patches = `git format-patch -o $destdir @ARGV`;
+exit $! if $!;
+
+open my $fh, ">", "$destdir/$series$suffix";
+if ($suffix eq ".inc") {
+    print $fh qq(SRC_URI += "\\\n);
+    for (@patches) {
+        s[$destdir/?(.*)\n][$1];
+        print $fh qq(  file://patches/$_ \\\n);
+    }
+    print $fh qq(  "\n);
+} else {
+    print $fh @patches;
+}

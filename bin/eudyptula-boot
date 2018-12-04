@@ -1,0 +1,733 @@
+#!/bin/sh
+
+# Copyright (c) 2014 Vincent Bernat <bernat@luffy.cx>
+#
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
+#
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+set -e
+
+ESC="$(printf '\033')"
+if [ -t 1 ] && [ -z "$noterm" ]; then
+    NORMAL="${ESC}[0m"
+    RED="${ESC}[31;1m"
+    GREEN="${ESC}[32;1m"
+    YELLOW="${ESC}[33;1m"
+    BLUE="${ESC}[34;1m"
+    BEGINNING="$(printf '\015\033')[K"
+else
+    BEGINNING="\n"
+fi
+
+log_begin_msg () {
+    [ -n "$SILENT" ] || {
+        >&2 printf "${BEGINNING}"
+        >&2 printf "${BLUE}[…]${NORMAL} $1${BLUE}...${NORMAL} "
+    }
+}
+log_ok_msg () {
+    [ -n "$SILENT" ] || {
+        >&2 printf "${BEGINNING}"
+        >&2 echo "$GREEN[✔]$NORMAL $1."
+    }
+}
+log_warn_msg () {
+    [ -n "$SILENT" ] || {
+        >&2 printf "${BEGINNING}"
+        >&2 echo "$YELLOW[⚡]$NORMAL $1!"
+    }
+}
+log_error_msg () {
+    >&2 printf "${BEGINNING}"
+    >&2 echo "$RED[✘]$NORMAL $1!"
+    exit 1
+}
+log_info_msg () {
+    [ -n "$SILENT" ] || {
+        >&2 printf "${BEGINNING}"
+        >&2 echo "$BLUE[∗]$NORMAL $1."
+    }
+}
+
+usage() {
+    >&2 cat <<EOF
+Usage: $PROGNAME [ options ] [ -- command ]
+Boot any Linux kernel using host root filesystem as a base.
+
+Options:
+
+ -s, --silent          Makes $(basename $PROGNAME) silent.
+ -v, --verbose         Makes kernel verbose.
+ -2, --ttyS2           Redirect kernel output to ttyS2.
+ -k, --kernel=BZIMAGE  Specify the kernel to boot. By default, boot on the
+                       running kernel.
+ -r, --root=DIR        Specify the directory to use as the root file system.
+ -w, --readwrite       Enable read/write access on the provided root file system.
+ -o, --readonly        Keep the root file system read-only (don't use an overlay).
+ -c, --cmdline=ARGS    Additional parameters for the kernel.
+ -1, --pid1            Execute the shell or the command as PID 1.
+ -m, --mem=QTY         How much memory to allocate for the VM.
+ -u, --user            Login as the current user in VM.
+ --shell               Start a shell, even when executing a command.
+ --qemu=OPTIONS        Additional options for QEMU.
+ --net                 Enable network access through the host.
+ --force               Allow running dangerous configuration.
+ --extra-gettys=QTY    Allocate extra console ports.
+
+EOF
+}
+
+_check_kernel_version() {
+    cmd=$1
+    sig1=$2
+    sig2=$3
+    case $sig1,$sig2 in
+        ,) poss="0:_" ;;
+        *) poss=$(tr "${sig1}\n${sig2}" "\n${sig2}=" < "$KERNEL" | grep -abo "^${sig2}" || true) ;;
+    esac
+    [ -n "$poss" ] || return 1
+    for pos in $poss; do
+        pos=${pos%%:*}
+        if tail -c+$pos "$KERNEL" | $cmd 2> /dev/null | strings -20 | \
+                grep ^Linux.version; then
+            return 0
+        fi
+    done
+    command -v ${cmd%% *} 2> /dev/null > /dev/null || \
+        log_warn_msg "Command \`$cmd' not found to uncompress $KERNEL"
+    return 1
+}
+
+check_kernel_version() {
+    log_begin_msg "Checking kernel version"
+    [ -f "$KERNEL" ] || log_error_msg "Unable to find kernel $KERNEL"
+    [ -r "$KERNEL" ] || log_error_msg "Kernel $KERNEL is not readable.\n    Try \`setfacl -m u:$USER:r $KERNEL'"
+
+    # A recent version of `file` is able to extract the
+    # information. Since it is not widely available, let use some hack
+    # method. See scripts/extract-vmlinux for patterns.
+    VERSION=$(false \
+                  || _check_kernel_version gunzip    '\037\213\010' xy     \
+                  || _check_kernel_version unxz      '\3757zXZ\000' abcde  \
+                  || _check_kernel_version bunzip2   'BZh'          xy     \
+                  || _check_kernel_version unlzma    '\135\0\0\0'   xxx    \
+                  || _check_kernel_version 'lzop -d' '\211\114\132' xy     \
+                  || true)
+    VERSION="${VERSION#Linux version }"
+    VERSION="${VERSION%% *}"
+    [ -n "$VERSION" ] || \
+        log_error_msg "Unable to determine version for $KERNEL"
+    log_ok_msg "Found kernel $VERSION"
+}
+
+
+check_kernel_configuration() {
+    log_begin_msg "Check kernel configuration"
+    CONFIG="$(dirname $KERNEL)/config-$VERSION"
+    [ -f "$CONFIG" ] || {
+        log_warn_msg "Unable to find configuration file $CONFIG"
+        return
+    }
+    while read el; do
+        grep -qx "CONFIG_$el" $CONFIG || log_error_msg "Kernel not configured with CONFIG_$el"
+    done <<EOF
+9P_FS=[ym]
+NET_9P=[ym]
+NET_9P_VIRTIO=[ym]
+VIRTIO=[ym]
+VIRTIO_PCI=[ym]
+SERIAL_8250=y
+SERIAL_8250_CONSOLE=y
+SERIAL_8250_PCI=y
+TMPFS=y
+SYSFS=y
+PROC_FS=y
+BLK_DEV_INITRD=y
+RD_GZIP=y
+DEVTMPFS=[ym]
+UNIX=y
+EOF
+    [ -n "$RW" ] || [ -n "$RO" ] || {
+        if grep -Eqc "CONFIG_OVERLAYFS_FS=[ym]" $CONFIG; then
+            log_ok_msg "Kernel configuration checked. overlayfs present"
+            UNION="${UNION}${UNION+ }overlayfs"
+        elif grep -Eqc "CONFIG_OVERLAY_FS=[ym]" $CONFIG; then
+            log_ok_msg "Kernel configuration checked. overlayfs present"
+            UNION="${UNION}${UNION+ }overlay"
+        fi
+        if grep -qc "CONFIG_AUFS_FS=[ym]" $CONFIG; then
+            log_ok_msg "Kernel configuration checked. AUFS present"
+            UNION="${UNION}${UNION+ }aufs"
+        fi
+        [ -n "$UNION" ] || \
+            log_warn_msg "Kernel configuration checked. Neither overlayfs nor AUFS present"
+    }
+}
+
+check_kernel_modules() {
+    log_begin_msg "Search for modules"
+    for dir in "$(dirname $KERNEL)/../lib/modules/$VERSION" "$(dirname $KERNEL)/lib/modules/$VERSION" "/lib/modules/$VERSION"; do
+        [ -d $dir ] || continue
+        dir="$(readlink -f "$dir")"
+        MODULES="$dir"
+        break
+    done
+    if [ -z "$MODULES" ]; then
+        log_warn_msg "Unable to find module directory"
+    else
+        log_ok_msg "Modules are in $MODULES"
+    fi
+}
+
+check_kernel() {
+    check_kernel_version
+    check_kernel_configuration
+    check_kernel_modules
+}
+
+check_dependencies() {
+    log_begin_msg "Checking if dependencies are present"
+    command -v busybox 2> /dev/null > /dev/null || log_error_msg "Busybox is not installed"
+    command -v qemu-system-$(uname -m) 2> /dev/null > /dev/null || log_error_msg "qemu-system-$(uname -m) is not installed"
+    command -v strings 2> /dev/null > /dev/null || log_error_msg "strings is not installed (binutils package)"
+    log_ok_msg "All dependencies are met"
+}
+
+setup_tmp () {
+    TMP=$(mktemp -d)
+    trap "rm -rf $TMP" EXIT
+    log_info_msg "TMP is $TMP"
+}
+
+setup_initrd () {
+    log_begin_msg "Build initrd"
+    DESTDIR=$TMP/initrd
+    mkdir -p $DESTDIR
+
+    # Copy busybox and eventually insmod
+    bins="busybox"
+    busybox --list | grep -qFx insmod || bins="$bins insmod"
+    for bin in $bins; do
+        install -D "$(command -v $bin)" ${DESTDIR}/bin/$bin
+
+        # First, get the loader and copy it (unless static binary)
+        objcopy -O binary -j .interp "$(command -v $bin)" $TMP/interp
+        [ -s $TMP/interp ] || continue
+
+        ld=$(tr -d '\000' < $TMP/interp)
+        [ -f "${DESTDIR}/$ld" ] || install -D "$ld" "${DESTDIR}/$ld"
+
+        # Then, use it to get the other libs
+        for x in $(LD_TRACE_LOADED_OBJECTS=1 $ld "$(command -v $bin)" 2> /dev/null | sed -e '
+               /\//!d;
+               /linux-gate/d;
+               /=>/ {s/.*=>[[:blank:]]*\([^[:blank:]]*\).*/\1/};
+               s/[[:blank:]]*\([^[:blank:]]*\) (.*)/\1/' 2>/dev/null); do
+            [ -f "${DESTDIR}/$x" ] || install -D "$x" "${DESTDIR}/$x"
+        done
+    done
+
+    # Configure busybox
+    for applet in $(${DESTDIR}/bin/busybox --list); do
+        ln -s busybox ${DESTDIR}/bin/${applet}
+    done
+
+    # Add modules
+    [ -z "$MODULES" ] || {
+        modules="9pnet_virtio 9p virtio_pci"
+        [ -z "$UNION" ] || modules="$modules $UNION"
+        for mod in $modules; do
+            base=${MODULES}/../../..
+            cmd="modprobe --all --set-version=${VERSION} -d ${base} --ignore-install --quiet --show-depends $mod"
+            $cmd > /dev/null || {
+                depmod -b ${base} ${VERSION} 2> /dev/null && $cmd > /dev/null || {
+                        log_warn_msg "Unable to find module $mod"
+                        log_begin_msg "Continue building initrd"
+                }
+            }
+            $cmd | while read prefix kmod options ; do
+                [ "${prefix}" = "insmod" ] || continue
+                grep -qFw "$kmod" ${DESTDIR}/modules 2> /dev/null || {
+                    install -D "$kmod" "${DESTDIR}/${kmod}"
+                    echo $prefix $kmod $options >> ${DESTDIR}/modules
+                }
+            done
+        done
+    }
+
+    # Copy this program
+    cp "$PROGNAME" ${DESTDIR}/init
+
+    # Create /tmp
+    mkdir -p ${DESTDIR}/tmp
+
+    # Build initrd
+    (cd "${DESTDIR}" && find . | cpio --quiet -R 0:0 -o -H newc) | gzip > $TMP/initrd.gz
+
+    log_ok_msg "initrd built in $TMP/initrd.gz"
+}
+
+start_vm () {
+    name=$(echo eudyptula-${VERSION} | tr '.' '-')
+    log_info_msg "Start VM $name"
+
+    # Configuration settings
+    mkdir "$TMP/config"
+    case $PWD in
+        $HOME*) echo "${PWD#$HOME/}" > "$TMP/config/pwd" ;;
+        *) echo "$PWD" > "$TMP/config/pwd" ;;
+    esac
+    echo "$TERM"  > "$TMP/config/term"
+    echo "$SHELL" > "$TMP/config/shell"
+    echo "$name"  > "$TMP/config/uts"
+    [ -z "$PID1" ]   || touch "$TMP/config/pid1"
+    [ -z "$RW" ]     || touch "$TMP/config/rw"
+    [ -z "$RO" ]     || touch "$TMP/config/ro"
+    [ -z "$FSHELL" ] || touch "$TMP/config/fshell"
+    [ -z "$UNION" ]  || echo "$UNION" > "$TMP/config/union"
+    [ -z "$CUSER" ]  || echo "$CUSER" > "$TMP/config/user"
+    [ -z "$EXTRA_GETTYS" ] || echo "$EXTRA_GETTYS" > "$TMP/config/gettys"
+    [ $# -eq 0 ] || echo "$@" > "$TMP/config/exec"
+
+    # Kernel command-line
+    append="console=${CONSOLE:-ttyS0} panic=1 8250.nr_uarts=4 nokaslr $CMDLINE"
+    [ -t 1 ] || append="$append noterm=1"
+    [ -z "$SILENT" ]  || append="$append SILENT=1 loglevel=3"
+    [ -n "$VERBOSE" ] || append="$append quiet"
+
+    # qemu command-line
+    qemu=""
+    [ -z "$MEM" ] || qemu="$qemu -m $MEM"
+    [ -z "$CONSOLE" ] || {
+        qemu="$qemu -chardev socket,id=charserial2,path=$TMP/vm-$name-kernel.pipe,server,wait"
+        qemu="$qemu -device pci-serial,chardev=charserial2,id=serial2"
+    }
+    [ -z "$EXTRA_GETTYS" ] || {
+        qemu="$qemu -device virtio-serial"
+        for i in $(seq $EXTRA_GETTYS); do
+            qemu="$qemu -chardev socket,id=getty$i,server,nowait,path=$TMP/getty-$i.pipe"
+            qemu="$qemu -device virtconsole,name=console.$((i-1)),chardev=getty$i"
+        done
+    }
+    [ x"$NET" != x"1" ] || {
+        mac=50:54:00:00:00:42
+        qemu="$qemu -netdev user,id=internet"
+        qemu="$qemu -device virtio-net-pci,mac=$mac,netdev=internet"
+    }
+    qemu="$qemu $QEMU"
+    # /root is mounted with version 9p2000.u to allow access to /dev,
+    # /sys and to mount new partitions over them. This is not the case
+    # for 9p2000.L.
+    cat <<EOF > "$TMP/vm-$name.exec"
+#!/bin/sh
+        echo \$\$ > $TMP/config/pid
+        exec qemu-system-$(uname -m) \
+        -enable-kvm \
+        -nodefconfig -nodefaults \
+        -display none \
+        -cpu host \
+        \
+        -chardev stdio,id=charserial0,signal=off \
+        -device pci-serial,chardev=charserial0,id=serial0 \
+        -chardev socket,id=charserial1,path=$TMP/vm-$name-serial.pipe,server,nowait \
+        -device pci-serial,chardev=charserial1,id=serial1 \
+        \
+        -chardev socket,id=con0,path=$TMP/vm-$name-console.pipe,server,nowait \
+        -mon chardev=con0,mode=readline \
+        \
+        -fsdev local,security_model=passthrough,id=fsdev-root,path=${ROOT} \
+        -device virtio-9p-pci,id=fs-root,fsdev=fsdev-root,mount_tag=rootshare \
+        -fsdev local,security_model=none,id=fsdev-home,path=${HOME} \
+        -device virtio-9p-pci,id=fs-home,fsdev=fsdev-home,mount_tag=homeshare \
+        -fsdev local,security_model=none,id=fsdev-modules,path=${MODULES}/..,readonly \
+        -device virtio-9p-pci,id=fs-modules,fsdev=fsdev-modules,mount_tag=moduleshare \
+        -fsdev local,security_model=passthrough,id=fsdev-config,path=$TMP/config \
+        -device virtio-9p-pci,id=fs-config,fsdev=fsdev-config,mount_tag=configshare \
+        \
+        -gdb unix:$TMP/vm-$name-gdb.pipe,server,nowait \
+        -no-reboot \
+        -kernel $KERNEL \
+        -initrd $TMP/initrd.gz \
+        -append "$append" \
+        \
+        $qemu
+EOF
+    log_info_msg "GDB server listening on $TMP/vm-$name-gdb.pipe"
+    log_info_msg "monitor listening on    $TMP/vm-$name-console.pipe"
+    log_info_msg "ttyS1 listening on      $TMP/vm-$name-serial.pipe"
+    [ -z "$EXTRA_GETTYS" ] || {
+        for i in $(seq $EXTRA_GETTYS); do
+            log_info_msg "Getty $i listening on    $TMP/getty-$i.pipe"
+        done
+    }
+    [ -z "$CONSOLE" ] || {
+        log_info_msg "ttyS2 listening on      $TMP/vm-$name-kernel.pipe"
+        log_warn_msg "You must connect with 'socat STDIO UNIX:$TMP/vm-$name-kernel.pipe'"
+    }
+    chmod +x "$TMP/vm-$name.exec"
+    "$TMP/vm-$name.exec"
+    log_info_msg "VM terminated"
+}
+
+# FSM
+export STATE=${STATE:-BEGIN}
+case $$,$STATE in
+    1,BEGIN)
+        # In initrd
+        log_info_msg "initrd started"
+        export PATH=/usr/local/bin:/usr/bin:/bin:/sbin:/usr/local/sbin:/usr/sbin
+        export HOME=/root
+
+        [ ! -f /modules ] || {
+            log_info_msg "Loading modules"
+            . /modules
+        }
+
+        log_begin_msg "Load configuration"
+        mount -n -t tmpfs tmpfs /tmp -o rw
+        mkdir /tmp/config
+        mount -n -t 9p configshare /tmp/config -o trans=virtio,version=9p2000.u,access=any,rw,cache=loose || \
+            log_error_msg "Unable to load configuration"
+
+        # Various config stuff
+        hostname "$(cat /tmp/config/uts)"
+        [ ! -f /tmp/config/pid1 ]   || export PID1=1
+        [ ! -f /tmp/config/rw ]     || export RW=1
+        [ ! -f /tmp/config/ro ]     || export RO=1
+        [ ! -f /tmp/config/fshell ] || export FSHELL=1
+        [ ! -f /tmp/config/union ]  || export UNION="$(cat /tmp/config/union)"
+        [ ! -f /tmp/config/user ]   || export CUSER="$(cat /tmp/config/user)"
+        export TERM=$(cat /tmp/config/term)
+        export SHELL=$(cat /tmp/config/shell)
+        unset SHLVL
+        log_ok_msg "Configuration loaded"
+
+        log_begin_msg "Setup root file system"
+        mkdir /tmp/target
+        mkdir /tmp/target/ro
+        mkdir /tmp/target/overlay
+        case $RW,$RO in
+            ,)
+                mkdir /tmp/target/rw
+                mount -n -t 9p rootshare /tmp/target/ro -o trans=virtio,version=9p2000.u,ro,cache=loose
+                mount -n -t tmpfs tmpfs  /tmp/target/rw -o rw
+                mkdir /tmp/target/rw/workdir
+                mkdir /tmp/target/rw/upperdir
+                set -- $UNION
+                while [ $# -gt 0 ]; do
+                    case $1 in
+                        aufs)
+                            ! mount -n -t aufs aufs /tmp/target/overlay \
+                              -o noxino,noatime,dirs=/tmp/target/rw/upperdir:/tmp/target/ro=ro 2> /dev/null || break
+                            log_warn_msg "Unable to use AUFS"
+                            ;;
+                        overlayfs)
+                            # Pre-3.18
+                            ! mount -n -t $1 overlayfs /tmp/target/overlay \
+                              -o lowerdir=/tmp/target/ro,upperdir=/tmp/target/rw/upperdir,noatime \
+                              2> /dev/null || break
+                            log_warn_msg "Unable to use overlayfs"
+                            ;;
+                        overlay)
+                            # 3.18+
+                            ! mount -n -t $1 overlayfs /tmp/target/overlay \
+                              -o lowerdir=/tmp/target/ro,upperdir=/tmp/target/rw/upperdir,workdir=/tmp/target/rw/workdir,noatime \
+                              2> /dev/null || break
+                            log_warn_msg "Unable to use overlayfs"
+                            ;;
+                    esac
+                    shift
+                done
+                [ $# -gt 0 ] || \
+                    mount -n --bind /tmp/target/ro /tmp/target/overlay
+                log_ok_msg "Root file system setup"
+                ;;
+            1,)
+                mount -n -t 9p    rootshare /tmp/target/overlay -o trans=virtio,version=9p2000.u,rw,cache=loose
+                ;;
+            ,1)
+                mount -n -t 9p    rootshare /tmp/target/overlay -o trans=virtio,version=9p2000.u,ro,cache=loose
+                ;;
+            *)
+                log_error_msg "Dunno if root FS should be RO or RW (ro=$RO,rw=$RW)"
+                ;;
+        esac
+
+        log_begin_msg "Clean /tmp and /run"
+        for fs in /run /var/run /var/tmp /var/log /tmp; do
+            if [ -d /tmp/target/overlay$fs ] && [ ! -h /tmp/target/overlay$fs ]; then
+                mount -n -t tmpfs tmpfs /tmp/target/overlay$fs -o rw,nosuid,nodev
+            fi
+        done
+        log_ok_msg "/tmp, /run and others are clean"
+
+        mkdir /tmp/target/overlay/tmp/config
+        mount -n --bind /tmp/config /tmp/target/overlay/tmp/config
+
+        log_info_msg "Change root"
+        export STATE=CHROOTED
+        cp /init /tmp/target/overlay/tmp
+        if command -v switch_root > /dev/null 2> /dev/null; then
+            exec switch_root /tmp/target/overlay /tmp/init
+        else
+            exec chroot /tmp/target/overlay /tmp/init
+        fi
+        ;;
+
+    1,CHROOTED)
+        log_begin_msg "Setup /proc and /sys"
+        mount -n -t proc proc /proc || (
+                log_error_msg "Unable to mount /proc"
+		exit 1
+	)
+        mount -n -t sysfs sys  /sys
+        mount -n -t debugfs debugfs /sys/kernel/debug 2> /dev/null || true
+        mount -n -t configfs configfs /sys/kernel/config 2> /dev/null || true
+        log_ok_msg "/proc and /sys setup"
+
+        if [ -z "$CUSER" ]; then
+            log_begin_msg "Mount /root"
+            mount -n -t 9p homeshare /root -o trans=virtio,version=9p2000.L,access=0,rw,cache=loose || \
+                log_error_msg "Unable to mount /root"
+            log_ok_msg "/root mounted"
+        else
+            export HOME=$(getent passwd $CUSER | awk -F: '{print $6}')
+            log_begin_msg "Mount $HOME"
+            mount -n -t 9p homeshare $HOME -o trans=virtio,version=9p2000.L,access=any,rw,cache=loose || \
+                log_error_msg "Unable to mount $HOME"
+            log_ok_msg "$HOME mounted"
+        fi
+        log_begin_msg "Mount /lib/modules"
+        mount -n -t 9p moduleshare /lib/modules -o trans=virtio,version=9p2000.L,access=0,ro,cache=loose || \
+            log_error_msg "Unable to mount /lib/modules"
+        log_ok_msg "/lib/modules mounted"
+
+        #echo 3 > /proc/sys/vm/drop_caches
+
+        log_begin_msg "Starting udev"
+        udev_log=err
+        mount -n -o size=10M,mode=0755 -t devtmpfs devtmpfs /dev
+        udevadm info --cleanup-db
+        for udev in /lib/systemd/systemd-udevd /usr/lib/systemd/systemd-udevd $(command -v udevd 2> /dev/null); do
+            [ ! -x $udev ] || break
+        done
+        $udev --daemon
+        udevadm trigger --action=add
+        udevadm settle
+        mkdir -p /dev/pts
+        mount -n -t devpts devpts /dev/pts 2> /dev/null || true
+        log_ok_msg "udev started"
+
+        #sysctl -q -w kernel.panic_on_oops=1
+
+        log_begin_msg "Configure network"
+        ip link set up dev lo
+        for iface in /sys/class/net/*; do
+            if [ x"$(cat "$iface/address")" = x"50:54:00:00:00:42" ]; then
+                # We don't use DHCP as the root filesystem may be read-only
+                ip link set up dev "${iface##*/}"
+                ip addr add 10.0.2.14/24 dev "${iface##*/}"
+                ip route add default via 10.0.2.2
+                if [ -L /etc/resolv.conf ]; then
+                    # /etc/resolv.conf is a symlink, assume it points to /run
+                    mkdir -p "$(dirname "$(readlink -m /etc/resolv.conf)")"
+                    echo "nameserver 10.0.2.3" > "$(readlink -m /etc/resolv.conf)"
+                else
+                    # root may be read-only, use a bind mount
+                    echo "nameserver 10.0.2.3" > /tmp/resolv.conf
+                    mount -n --bind /tmp/resolv.conf /etc/resolv.conf
+                fi
+                break
+            fi
+            iface=
+        done
+        log_ok_msg "Network configured${iface:+ (${iface##*/})}"
+
+        # Switch to the appropriate directory we were in
+        cd $HOME
+        cd $(cat /tmp/config/pwd) 2> /dev/null || true
+
+        # Do we have an exec share?
+        if [ -f /tmp/config/exec ]; then
+            if [ -z "$FSHELL" ]; then
+                # Don't execute in a shell
+                ret=0
+                ${PID1:+exec} ${CUSER:+chroot --userspec=${CUSER} /} sh -c "cd $PWD && . /tmp/config/exec" || ret=$?
+                echo $ret > /tmp/config/ret
+                echo b > /proc/sysrq-trigger
+            else
+                sh /tmp/config/exec
+            fi
+        fi
+
+        [ -z "$CUSER" ] || [ ! -x /usr/bin/sudo ] || {
+            log_begin_msg "Configuring sudo"
+            echo "$CUSER ALL=(ALL) NOPASSWD: ALL" > /tmp/sudoers
+            mount --bind /tmp/sudoers /etc/sudoers
+            log_ok_msg "sudo configured for $CUSER"
+        }
+
+        log_info_msg "Setup terminal"
+        export STATE=GETTY
+        [ ! -f /tmp/config/gettys ] || {
+            for i in $(seq $(cat /tmp/config/gettys)); do
+                while true; do /sbin/agetty -n -L hvc$((i-1)) -a root -l /tmp/init -i 115200 $TERM ; done &
+            done
+        }
+        mount -t proc proc /proc
+        exec setsid /sbin/agetty -n -L ttyS0 -a root -l /tmp/init -i 115200 $TERM
+        ;;
+
+    *,GETTY)
+        log_begin_msg "Setup terminal size"
+        previous=$(stty -g)
+        stty raw -echo min 0 time 5
+        printf '\0337\033[r\033[999;999H\033[6n\0338' > /dev/tty
+        IFS='[;R' read -r _ rows cols _ < /dev/tty || true
+        stty "$previous"
+        if [ -n "$cols" ] && [ -n "$rows" ]; then
+            stty cols "$cols" rows "$rows"
+            log_ok_msg "Terminal size is $cols×$rows"
+        else
+            log_warn_msg "Unknown terminal size"
+        fi
+
+        log_info_msg "QEMU PID is $(cat /tmp/config/pid)"
+        log_info_msg "Spawning a shell"
+        export SSH_TTY=$(tty)
+        for SHELL in $SHELL /bin/bash /bin/sh; do
+            [ ! -x $SHELL ] || break
+        done
+        ret=0
+        ${PID1:+exec} ${CUSER:+chroot --userspec=${CUSER} /} sh -c "cd $PWD && exec ${SHELL} -i" || ret=$?
+        case $$ in
+            1)
+                echo $ret > /tmp/config/ret
+                echo b > /proc/sysrq-trigger
+                ;;
+            *)
+                exit $ret
+                ;;
+        esac
+        ;;
+
+    *,BEGIN)
+        # Initial state
+        PROGNAME="$(readlink -f "$0")"
+        ARGS="$(getopt -n eudyptula-boot \
+            -o +hsk:r:c:m:u1wov2 \
+            --longoptions help,silent,kernel:,root:,cmdline:,qemu:,mem:,extra-gettys:,user,net,network,pid1,readwrite,readonly,force,shell,verbose,ttyS2 \
+            -- "$@")" || \
+            log_error_msg "Invalid option, use --help for more information"
+        eval set -- "$ARGS"
+        while true; do
+            case "$1" in
+                -h | --help)
+                    usage
+                    exit 0
+                    ;;
+                -s | --silent)
+                    SILENT=1
+                    shift
+                    ;;
+                -v | --verbose)
+                    VERBOSE=1
+                    shift
+                    ;;
+                -2 | --ttyS2)
+                    CONSOLE=ttyS2
+                    shift
+                    ;;
+                -k | --kernel)
+                    KERNEL="$(readlink -f "$2")"
+                    shift 2
+                    ;;
+                -r | --root)
+                    ROOT="$(readlink -f "$2")"
+                    shift 2
+                    ;;
+                -w | --readwrite)
+                    RW=1
+                    shift
+                    ;;
+                -o | --readonly)
+                    RO=1
+                    shift
+                    ;;
+                -c | --cmdline)
+                    CMDLINE="$2"
+                    shift 2
+                    ;;
+                --qemu)
+                    QEMU="$QEMU $2"
+                    shift 2
+                    ;;
+                -m | --mem)
+                    MEM="$2"
+                    shift 2
+                    ;;
+                -u | --user)
+                    CUSER="$(id -nu)"
+                    shift 1
+                    ;;
+                --net|--network)
+                    NET=1
+                    shift
+                    ;;
+                -1 | --pid1)
+                    PID1=1
+                    shift
+                    ;;
+                --shell)
+                    FSHELL=1
+                    shift
+                    ;;
+                --force)
+                    DANGEROUS=1
+                    shift
+                    ;;
+                --extra-gettys)
+                    EXTRA_GETTYS="$2"
+                    shift 2
+                    ;;
+                -- )
+                    shift
+                    break
+                    ;;
+                * )
+                    log_error_msg "Unknown argument \`$1'"
+                    usage
+                    exit 1
+                    ;;
+            esac
+        done
+        [ -z "$RW" ] || [ -z "$RO" ] || \
+            log_error_msg "Use of \`--readwrite' and \`--readonly' are exclusive"
+        [ -n "$DANGEROUS" ] || [ -z "$RW" ] || [ -n "$ROOT" ] || \
+            log_error_msg "Use of \`--readwrite' without \`--root' is too dangerous"
+        [ -n "$DANGEROUS" ] || [ $(id -u) != 0 ] || \
+            log_error_msg "You should not run this as root"
+
+        KERNEL="${KERNEL:-/boot/vmlinuz-$(uname -r)}"
+        ROOT="${ROOT:-/}"
+        PATH="$PATH":/usr/local/sbin:/usr/sbin:/sbin
+
+        check_dependencies
+        check_kernel
+        setup_tmp
+        setup_initrd
+        start_vm "$@"
+        ret=255
+        [ ! -f $TMP/config/ret ] || ret="$(cat $TMP/config/ret)"
+        exit $ret
+        ;;
+esac
