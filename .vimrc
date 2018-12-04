@@ -234,6 +234,8 @@ nnoremap <leader>z :NERDTreeToggle<CR>
 "support for Inline::C code highlighting
 "eventually __END__ highlighting must be removed
 autocmd BufRead,BufNewFile *.pl call TextEnableCodeSnip('c', '__C__', '__DATA__', 'SpecialComment')
+autocmd BufRead,BufNewFile *.h set filetype=c
+autocmd BufRead,BufNewFile svn-commit*.tmp set filetype=diff
 cabbr <expr> %% expand('%:p:h')
 
 """""""""""""""""""""
@@ -426,6 +428,23 @@ fun! ShowFuncName()
   call search("\\%" . lnum . "l" . "\\%" . col . "c")
   return text
 endfun
+
+" https://stackoverflow.com/questions/8861910/ignore-lines-with-particular-words-in-vimdiff-output
+set diffexpr=MyDiff()
+function! MyDiff()
+    let opt = ""
+    if exists("g:diffignore") && g:diffignore != ""
+        let opt = "-I " . g:diffignore . " "
+    endif
+    if &diffopt =~ "icase"
+        let opt = opt . "-i "
+    endif
+    if &diffopt =~ "iwhite"
+        let opt = opt . "-b "
+    endif
+    silent execute "!diff -a --binary " . opt . v:fname_in . " " .
+        \ v:fname_new . " > " . v:fname_out
+endfunction
 
 if filereadable(expand("~/.vimrc.after"))
   source ~/.vimrc.after

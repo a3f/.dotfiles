@@ -1,3 +1,4 @@
 #!/bin/sh
 
-dtc -I dts -O dtb $@
+#cpp -Iinclude $@ | dtc -I dts -O dtb -H epapr -
+dtc -I dts -O dtb -H epapr $@
