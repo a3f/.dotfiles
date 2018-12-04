@@ -30,8 +30,8 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-eunuch'
 Plug 'FooSoft/vim-argwrap'
-Plug 'scrooloose/nerdcommenter'
-Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdcommenter', { 'on': [ 'NERDCommenterInvert', 'NERDCommenterNested' ] }
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'ryanoasis/vim-devicons'
 Plug 'Valloric/YouCompleteMe', { 'for' : ['c', 'c++', 'rust', 'objc', 'objc++'] }
 Plug 'vim-perl/vim-perl', { 'for' : 'perl' }
@@ -49,11 +49,12 @@ Plug 'bronson/vim-trailing-whitespace'
 Plug 'dag/vim2hs', { 'for' : 'haskell' }
 Plug 'eagletmt/ghcmod-vim', { 'for' : 'haskell' }
 Plug 'eagletmt/neco-ghc', { 'for' : 'haskell' }
-Plug 'scrooloose/syntastic'
-Plug 'nxadm/syntastic-perl6', { 'for' : 'perl6' }
+Plug 'w0rp/ale'
+"Plug 'scrooloose/syntastic'
+"Plug 'nxadm/syntastic-perl6', { 'for' : 'perl6' }
 Plug 'ajh17/Spacegray.vim'
 Plug 'rdnetto/YCM-Generator', { 'for' : 'cmake' }
-Plug 'godlygeek/tabular'
+Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
 Plug 'vim-scripts/gtags.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'benmills/vimux'

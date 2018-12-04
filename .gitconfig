@@ -16,6 +16,8 @@
 [alias]
     d = difftool
     s = status
+    cherry = cherry-pick
+    pick = cherry-pick
     git = "!exec git"
     pushf = push --force-with-lease
 [difftool]

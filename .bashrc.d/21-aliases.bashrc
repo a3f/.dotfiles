@@ -57,7 +57,7 @@ alias make!='make clean; make -j4'
 alias a='./a.out'
 alias ping='ping -a'
 alias size='size --format=SysV'
-alias dudir="find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -rn | perl -MNumber::Bytes::Human=format_bytes -ne '/^(.*)\t(.*)$/; print format_bytes(1000*$ 1), qq(\t), $ 2, qq(\n)'"
+alias dudir="find . -maxdepth 1 -type d -print0 | xargs -0 du -sk | sort -n | perl -MNumber::Bytes::Human=format_bytes -ne '/^(.*)\t(.*)$/; print format_bytes(1000*$ 1), qq(\t), $ 2, qq(\n)'"
 alias lsnet='sudo arp-scan --localnet --interface '
 alias lshot='grep ip_address /private/var/db/dhcpd_leases | cut -d= -f2 | nmap -iL - -sn | tail -n +2 | sed -n "s/^Nmap scan report for \(.*\)\$/\1/p"'
 alias lman="man -M$HOME/linux-man"
@@ -102,6 +102,7 @@ alias mypi="smbutil lookup mypi | perl -077 -pe 's/.*mypi: (.*)/\1/gs'"
 alias 2b='2base -d 2'
 alias 2o='2base -d 8'
 alias 2d='2base -d 10'
+alias 2c='perl -pe "while (<>) { $_ - 0xFFFFFFFF }"'
 alias 2h='2base -d 16'
 alias 2x='2base -d 16'
 alias 2a='2u'
