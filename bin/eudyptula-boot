@@ -67,6 +67,8 @@ Options:
 
  -s, --silent          Makes $(basename $PROGNAME) silent.
  -v, --verbose         Makes kernel verbose.
+ -b, --build=DESTDIR   build and install kernel into specified directory.
+ -i, --install=TARGETS make(2) targets to build during the install stage.
  -2, --ttyS2           Redirect kernel output to ttyS2.
  -k, --kernel=BZIMAGE  Specify the kernel to boot. By default, boot on the
                        running kernel.
@@ -485,11 +487,14 @@ case $$,$STATE in
 
     1,CHROOTED)
         log_begin_msg "Setup /proc and /sys"
-        mount -n -t proc proc /proc || (
+        mount -n -t proc proc  /proc || (
                 log_error_msg "Unable to mount /proc"
 		exit 1
 	)
-        mount -n -t sysfs sys  /sys
+        mount -n -t sysfs sys  /sys || (
+                log_error_msg "Unable to mount /sys"
+		exit 1
+	)
         mount -n -t debugfs debugfs /sys/kernel/debug 2> /dev/null || true
         mount -n -t configfs configfs /sys/kernel/config 2> /dev/null || true
         log_ok_msg "/proc and /sys setup"
@@ -624,8 +629,8 @@ case $$,$STATE in
         # Initial state
         PROGNAME="$(readlink -f "$0")"
         ARGS="$(getopt -n eudyptula-boot \
-            -o +hsk:r:c:m:u1wov2 \
-            --longoptions help,silent,kernel:,root:,cmdline:,qemu:,mem:,extra-gettys:,user,net,network,pid1,readwrite,readonly,force,shell,verbose,ttyS2 \
+            -o +hsb:k:r:c:m:u1wov2 \
+            --longoptions help,silent,build:,install:,kernel:,root:,cmdline:,qemu:,mem:,extra-gettys:,user,net,network,pid1,readwrite,readonly,force,shell,verbose,ttyS2 \
             -- "$@")" || \
             log_error_msg "Invalid option, use --help for more information"
         eval set -- "$ARGS"
@@ -642,6 +647,14 @@ case $$,$STATE in
                 -v | --verbose)
                     VERBOSE=1
                     shift
+                    ;;
+                -b | --build)
+                    BUILDDIR="$(readlink -f "$2")/"
+                    shift 2
+                    ;;
+                -i | --install)
+                    INSTALL="$2"
+                    shift 2
                     ;;
                 -2 | --ttyS2)
                     CONSOLE=ttyS2
@@ -716,6 +729,31 @@ case $$,$STATE in
             log_error_msg "Use of \`--readwrite' without \`--root' is too dangerous"
         [ -n "$DANGEROUS" ] || [ $(id -u) != 0 ] || \
             log_error_msg "You should not run this as root"
+
+        MAKE="${EUDYPTULA_MAKE:-${MAKE:-make}}"
+
+        if [ -n "$INSTALL" -a -z "$BUILDDIR" ]; then
+            echo "--build=BUILDDIR must be specified along --install" 2>/dev/null
+            usage
+            exit 2;
+        fi
+
+        if [ -n "$BUILDDIR" ]; then
+            set -e
+            [ -z $CONFIG ] && CONFIG="$($MAKE --info 2>/dev/null | awk -F '"' '/config_path_expanded/ {print $4}')"
+            [ -z $CONFIG ] && CONFIG=.config
+
+            RELEASE="$($MAKE kernelrelease 2>/dev/null | grep -v '^make')"
+            $MAKE bzImage
+            $MAKE install INSTALL_MOD_PATH=$BUILDDIR INSTALL_PATH=$BUILDDIR $INSTALL
+
+            cp $CONFIG $BUILDDIR/config-$RELEASE
+            (cd $BUILDDIR; (
+                ln -f -s vmlinuz-$RELEASE vmlinuz;
+                ln -f -s config-$RELEASE config
+            ))
+            KERNEL="${KERNEL:-$BUILDDIR/vmlinuz}"
+        fi;
 
         KERNEL="${KERNEL:-/boot/vmlinuz-$(uname -r)}"
         ROOT="${ROOT:-/}"
