@@ -203,6 +203,7 @@ set ignorecase smartcase
 set hlsearch
 set incsearch
 nnoremap <silent> <leader>n :noh<CR>
+xnoremap // y/\V<C-R>"<CR>
 " left-hand line-wise navigation
 nnoremap <C-q> <C-y>
 nnoremap <up> g;
