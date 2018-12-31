@@ -17,12 +17,21 @@ parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
 
+IN_QEMU=false
+if command -v dmidecode && (dmidecode | grep -q QEMU); then
+    IN_QEMU=true
+    echo
+    uname -v
+fi
+
 function __prompt_command() {
     local EXIT="$?"
 
     PS1="${debian_chroot:+($debian_chroot)}"
     PS1+="\[\e[38;5;3m\][\u@\h \w]"
-    PS1+="\[\033[32m\]\$(parse_git_branch)\[\033[00m\]"
+    if ! $IN_QEMU; then
+        PS1+="\[\033[32m\]\$(parse_git_branch)\[\033[00m\]"
+    fi
     PS1+="\\$\[$(tput sgr0)\]\[\e[0m\]"
     if [ $EXIT -eq 0 ]; then
         PS1+="\[\e[01;32m\]\n0 ";
