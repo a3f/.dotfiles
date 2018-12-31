@@ -37,10 +37,10 @@ cpan-version () {
     perl -M$1 -e "print $ $1::VERSION, qq(\n)";
 }
 ackvi () {
-    ack -l $@ | xargs vi "+/$1"
+    ack -l $@ | xargs -o vi "+/$1"
 }
 ackvim () {
-    ack -l $@ | xargs vim "+/$1"
+    ack -l $@ | xargs -o vim "+/$1"
 }
 
 if [[ $OSTYPE == darwin* ]]; then
