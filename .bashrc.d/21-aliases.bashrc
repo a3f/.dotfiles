@@ -36,11 +36,16 @@ pushd! () {
 cpan-version () {
     perl -M$1 -e "print $ $1::VERSION, qq(\n)";
 }
+xargs-o() { # portable alternative to BSD's xargs -o
+    prog=$1
+    shift
+    xargs sh -c "$prog \"\$@\" < /dev/tty" $prog
+}
 ackvi () {
-    ack -l $@ | xargs -o vi "+/$1"
+    ack -l "$@" | xargs-o vi "+/$1"
 }
 ackvim () {
-    ack -l $@ | xargs -o vim "+/$1"
+    ack -l "$@" | xargs-o vim "+/$1"
 }
 
 if [[ $OSTYPE == darwin* ]]; then
