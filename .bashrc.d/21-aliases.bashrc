@@ -160,3 +160,5 @@ function suptime() {
     # compute the time difference
     LANG=C printf '%s (%.2fs ago)\n' "$(date -d @$timestamp)" $(bc <<<"$(date +%s.%N) - $timestamp")
 }
+
+alias wdiff="wdiff -3 -n -w $'\033[30;41m' -x $'\033[0m' -y $'\033[30;42m' -z $'\033[0m'"
