@@ -23,15 +23,15 @@ fi
 
 
 cal () {
-    $(which cal) $@ | sed -e "s/\([\n ]\)\(`date +%e`\)\([\n ]\)/\1$HIGHLIGHT\2$NORMAL\3/"
+    $(which cal) "$@" | sed -e "s/\([\n ]\)\(`date +%e`\)\([\n ]\)/\1$HIGHLIGHT\2$NORMAL\3/"
 }
 cd! () {
-	mkdir -v -p $@;
-	cd $@;
+	mkdir -v -p "$@";
+	cd "$@";
 }
 pushd! () {
-	mkdir -v -p $@;
-	pushd $@;
+	mkdir -v -p "$@";
+	pushd "$@";
 }
 cpan-version () {
     perl -M$1 -e "print $ $1::VERSION, qq(\n)";
