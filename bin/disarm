@@ -1,0 +1,27 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+require File::Temp;
+use File::Temp ();
+
+use File::Which;
+
+my $CROSS_COMPILE = $ENV{CROSS_COMPILE} // detect_objdump();
+
+my $fh = File::Temp->new();
+print $fh do { local $/; <>};
+
+exec "${CROSS_COMPILE}objdump", qw/-D -bbinary -marm/, $fh->filename;
+
+sub detect_objdump {
+	my @triples = qw(
+		arm-linux-gnueabihf-
+		arm-linux-gnueabi-
+		arm-none-eabi-
+	);
+	for (@triples) {
+		return $_ if which("${_}objdump");
+	}
+	return ''
+};
