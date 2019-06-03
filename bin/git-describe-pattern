@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+if [ "$#" -lt 1 ]; then
+    echo 'fatal: pattern must be specified'
+    echo 'usage: git describe-pattern <pattern>'
+    exit 1
+fi
+
+log=$(git log --oneline --grep "$1")
+git describe --tags ${log%% *}

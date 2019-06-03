@@ -1,0 +1,15 @@
+#!/bin/sh
+
+set -e
+
+if [ "$#" -ne 2 ]; then
+    echo 'usage: git rebranch <blob> <path>'
+    exit 1
+fi
+
+blob="$1"
+path="$2"
+exec git log --all --pretty=format:%H -- $path | \
+     xargs -n1 -I% sh -c "git ls-tree % -- $path | grep -q $blob && echo %" | \
+     xargs git describe --tags
+

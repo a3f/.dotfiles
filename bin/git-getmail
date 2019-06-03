@@ -1,0 +1,16 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use Getopt::Std;
+
+getopts 'm', \my %opts;
+
+my $pattern = shift;
+$pattern = "thread:{id:$pattern}" unless $opts{m};
+
+my @patches = qx/notmuch extract-patch $pattern 2>&1/;
+print @patches
+
+__END__
+
+git-getmail 'message-id'
