@@ -93,9 +93,9 @@ filetype indent on    " required
 """""""""""""""""
 
 let mapleader=' '
-" evaluate selection or till semi-colon
-xnoremap <leader>e "ac<c-r>=<c-r>a<CR><Esc>T<space>
-nnoremap <leader>e "ac/[;,:=]<cr><c-r>=<c-r>a<CR><Esc>T<space>:noh<cr>
+" evaluate selection or till semi-colon 1+1
+xnoremap <leader>e "ac<c-r>=PerlEval(@a)<CR><Esc>T<space>
+nnoremap <leader>e "ac/[;,:=>}]<cr><c-r>=PerlEval(@a)<CR><Esc>T<space>:noh<cr>
 nnoremap <leader><backspace> :w<CR>
 
 xmap  <LEFT> <Plug>SchleppLeft
@@ -289,6 +289,12 @@ nnoremap <leader>p "ap
 nnoremap <leader>P "aP
 
 """""""""""""""""""""""
+""""""" Terminal """"""
+"""""""""""""""""""""""
+
+map <C-Tab> :b term://.//74879:/bin/bash
+
+"""""""""""""""""""""""
 """" Code specific """"
 """""""""""""""""""""""
 "let g:linuxsty_patterns = [ "/usr/src/", "/linux", "~/linux", "~/prjs/uman", "$BACKUP/linux", "$BACKUP/barebox" ]
@@ -445,6 +451,10 @@ function! MyDiff()
     endif
     silent execute "!diff -a --binary " . opt . v:fname_in . " " .
         \ v:fname_new . " > " . v:fname_out
+endfunction
+
+function! PerlEval(cmd) range
+  return system('eval.pl "' . @a .'"')
 endfunction
 
 if filereadable(expand("~/.vimrc.after"))
