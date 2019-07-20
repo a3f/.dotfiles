@@ -4,8 +4,8 @@
 	required = true
 [user]
 	name = Ahmad Fatoum
-	email = a.fatoum@pengutronix.de
-	signingkey = 2F8DCED461C2D19830DFA8C392D27EE7691CBDFE
+	email = ahmad@a3f.at
+	signingkey = C3EAC3DE9321D59B
 [filter "lfs"]
 	clean = git lfs clean %f
 	smudge = git lfs smudge %f
@@ -37,7 +37,7 @@
 	attributesfile = ~/.gitattributes
 [commit]
 	verbose = true
-	gpgsign = false
+	gpgsign = true
 [github]
 	user = a3f
 [gpg]
@@ -45,10 +45,14 @@
 [pull]
 	rebase = preserve
 [sendemail]
-	from = Ahmad Fatoum <a.fatoum@pengutronix.de>
 	confirm = always
 	signedoffbycc = false
 	suppresscc = self
+	smtpserver = mail.gandi.net
+	smtpserverport = 587
+	smtpencryption = tls
+	smtpuser = ahmad@a3f.at
+
 [pretty]
 	fixes = Fixes: %h (\"%s\")
 [rebase]
