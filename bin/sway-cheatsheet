@@ -1,0 +1,32 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use File::Temp qw/tempfile/;
+
+my $COLORS = $ENV{COLORS} // -t STDOUT;
+
+sub get_bindings {
+	my $mode = shift;
+	my @bindings;
+
+	my $config = "$ENV{HOME}/.config/$mode/config";
+
+	open my $fh, "<", $config or die "$config: $!\n";
+
+	while (<$fh>) {
+		s/^\s+|\s+$//g;
+		s{^bind(?:sym|code)\s+(\S+)(\s+)}{$1\t}gx or next; 
+		if ($COLORS) {
+			s{^(\S+)}{\e[32m$1\e[0m}gx or next; 
+			s/(\$\w+)/\e[31m$1\e[32m/g;
+			s/\+/\e[36m\+\e[32m/g;
+		}
+		push @bindings, $_;
+	}
+
+	return sort @bindings
+}
+
+print(join "\n", get_bindings('sway'), "\n");
