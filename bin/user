@@ -1,0 +1,48 @@
+#! /usr/bin/env bash
+
+# based on sysgit
+################################################################################
+### just checking whether someone needs an helptext
+function startsWithDash {
+    test "${1:0:1}" = "-"
+}
+function paramsAreEmpty {
+    test ${#@} -eq 0
+}
+
+function printHelp {
+    echo "“user” sets the environment variable (\$GIT_DIR) for git programs, to find the git dir"
+    echo ""
+    echo "  [synopsis]"
+    echo "     $ user command"
+    echo ""
+    echo "  [examples]"
+    echo "     $ user git add ~/.config/swig/config"
+    echo "     $ user git commit -m 'add ~/.config/swig/config'"
+    echo "     $ user tig"
+    echo ""
+    echo "  [environment variables]"
+    echo "     USERGIT_PATH_OFFSET: set this path to another system, where you"
+    echo "                         could chroot in, so you can see and checkout"
+    echo "                         differences between the installed system and"
+    echo "                         another one"
+    echo ""
+
+}
+
+if startsWithDash $@; then
+    printHelp
+    exit 0
+fi
+
+if paramsAreEmpty $@; then
+    printHelp
+    exit 0
+fi
+
+################################################################################
+export GIT_DIR=$USERGIT_PATH_OFFSET$HOME/.usergit
+test -e $HOME/.usergit/ssh && export GIT_SSH=$HOME/.usergit/ssh
+
+"$@"
+

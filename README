@@ -1,0 +1,7 @@
+git --git-dir ~/.usergit --work-tree / init
+mkdir -p ~/bin
+curl -L https://raw.githubusercontent.com/a3f/.dotfiles/master/bin/user > ~/bin/user
+chmod +x ~/bin/user
+~/bin/user git config status.showuntrackedfiles no
+~/bin/user git remote add upstream git@github.com:a3f/.dotfiles.git
+~/bin/user git pull --force upstream master
