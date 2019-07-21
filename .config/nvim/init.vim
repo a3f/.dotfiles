@@ -1,0 +1,1 @@
+/home/a3f/.vimrc
