@@ -211,3 +211,5 @@ bar {
 }
 
 include /etc/sway/config.d/*
+
+bindsym $mod+slash exec terminator -x "bash -c 'exec less -f -R <(COLORS=1 ~/bin/sway-cheatsheet)'"
